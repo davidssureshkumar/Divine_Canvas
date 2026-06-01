@@ -1,0 +1,67 @@
+name: Instrumented tests (emulator)
+
+# Runs the androidTest suite on a real Android emulator. Catches runtime bugs
+# that JVM unit tests cannot (e.g. Android's ICU regex engine, Hilt graph wiring,
+# app launch). Runs on PRs and on demand — emulator boots take a few minutes.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+# Cancel superseded runs on the same ref to save minutes.
+concurrency:
+  group: instrumented-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      matrix:
+        api-level: [34]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable KVM (hardware acceleration)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/libs.versions.toml') }}
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          target: google_apis
+          force-avd-creation: false
+          disable-animations: true
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: ./gradlew :app:connectedDebugAndroidTest
+
+      - name: Upload androidTest report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: instrumented-test-report-api${{ matrix.api-level }}
+          path: app/build/reports/androidTests/

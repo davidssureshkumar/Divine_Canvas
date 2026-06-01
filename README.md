@@ -128,6 +128,10 @@ Font License; the license is bundled at `assets/licenses/PlayfairDisplay-OFL.txt
 
 ## Tests
 
-JVM unit tests cover the offline versification logic, the reactive dropdown state
-machine, the banner conditional-rendering rule, and the repository's cache-first /
-network-fallback behavior (`app/src/test/...`).
+- **JVM unit tests** (`app/src/test/...`): offline versification logic, the reactive
+  dropdown state machine, the banner conditional-rendering rule, the repository's
+  cache-first / network-fallback behavior, and a versification↔KJV integrity check.
+- **Instrumented tests** (`app/src/androidTest/...`): run on a real Android emulator
+  in CI (`.github/workflows/instrumented.yml`) — an app-launch smoke test and an
+  on-device `KjvOfflineSource` test. These catch Android-runtime issues that JVM
+  tests can't (e.g. the ICU regex engine, Hilt graph wiring).
