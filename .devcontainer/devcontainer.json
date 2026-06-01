@@ -1,0 +1,26 @@
+{
+  "name": "Divine Canvas (Android, cloud build)",
+  "image": "mcr.microsoft.com/devcontainers/java:1-17-bookworm",
+  "containerEnv": {
+    "ANDROID_SDK_ROOT": "/usr/local/android-sdk",
+    "ANDROID_HOME": "/usr/local/android-sdk"
+  },
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/usr/local/android-sdk/cmdline-tools/latest/bin:/usr/local/android-sdk/platform-tools"
+  },
+  "onCreateCommand": "bash .devcontainer/setup-android-sdk.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-gradle",
+        "redhat.java",
+        "fwcd.kotlin"
+      ]
+    }
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb"
+  }
+}

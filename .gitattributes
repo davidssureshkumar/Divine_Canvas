@@ -1,0 +1,10 @@
+# Keep Unix line endings on files executed by cloud Linux runners/containers,
+# even when committed from Windows. Prevents "bad interpreter" / CRLF failures.
+* text=auto eol=lf
+*.sh text eol=lf
+gradlew text eol=lf
+*.bat text eol=crlf
+*.jar binary
+*.ttf binary
+*.png binary
+*.webp binary

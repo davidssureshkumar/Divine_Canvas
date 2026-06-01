@@ -1,0 +1,173 @@
+import java.util.Properties
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+}
+
+// Read optional API keys from local.properties (never committed). All keys are
+// optional: the app falls back to bundled offline content when they are absent.
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+fun prop(name: String): String = (localProps.getProperty(name) ?: "").trim()
+
+android {
+    namespace = "com.divinecanvas"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.divinecanvas"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables { useSupportLibrary = true }
+
+        // Optional integration keys — empty string => feature gracefully disabled.
+        buildConfigField("String", "UNSPLASH_ACCESS_KEY", "\"${prop("UNSPLASH_ACCESS_KEY")}\"")
+        buildConfigField("String", "PEXELS_API_KEY", "\"${prop("PEXELS_API_KEY")}\"")
+
+        // Optional BYO licensed-translation key (scripture.api.bible). Without it,
+        // licensed translations (NIV/NKJV/ESV) stay disabled. Bible IDs must match
+        // the versions your key is entitled to; defaults are common public IDs.
+        buildConfigField("String", "API_BIBLE_KEY", "\"${prop("API_BIBLE_KEY")}\"")
+        buildConfigField("String", "API_BIBLE_ID_NIV", "\"${prop("API_BIBLE_ID_NIV").ifEmpty { "78a9f6124f344018-01" }}\"")
+        buildConfigField("String", "API_BIBLE_ID_NKJV", "\"${prop("API_BIBLE_ID_NKJV")}\"")
+        buildConfigField("String", "API_BIBLE_ID_ESV", "\"${prop("API_BIBLE_ID_ESV")}\"")
+        // Web client id for optional Google Sign-In via Credential Manager.
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${prop("GOOGLE_WEB_CLIENT_ID")}\"")
+        buildConfigField("String", "PRIVACY_POLICY_URL", "\"${prop("PRIVACY_POLICY_URL").ifEmpty { "https://divinecanvas.app/privacy" }}\"")
+        buildConfigField("String", "TERMS_URL", "\"${prop("TERMS_URL").ifEmpty { "https://divinecanvas.app/terms" }}\"")
+    }
+
+    buildTypes {
+        debug {
+            isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            // Configure signing in CI / Android Studio; debug signing used here so
+            // `assembleRelease` succeeds out of the box for local verification.
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+        freeCompilerArgs += listOf("-Xjvm-default=all")
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+            isIncludeAndroidResources = true
+        }
+    }
+
+    lint {
+        warningsAsErrors = false
+        abortOnError = false
+        checkReleaseBuilds = true
+        baseline = file("lint-baseline.xml")
+    }
+}
+
+// Export Room schemas for migration tracking / CI verification.
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+dependencies {
+    // Core / lifecycle
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.activity.compose)
+
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Networking
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.kotlinx.serialization.json)
+
+    // Images
+    implementation(libs.coil.compose)
+
+    // Preferences
+    implementation(libs.androidx.datastore.preferences)
+
+    // Optional Google Sign-In (Credential Manager)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+
+    // Runtime permissions helper
+    implementation(libs.accompanist.permissions)
+
+    // Unit tests
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+
+    // Instrumented tests
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+}

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Divine Canvas</string>
+    <string name="app_tagline">Beautiful Bible verses for your Status</string>
+
+    <!-- Navigation / screens -->
+    <string name="nav_create">Create</string>
+    <string name="nav_settings">Settings</string>
+    <string name="screen_editor_title">Create Verse</string>
+    <string name="screen_settings_title">Settings</string>
+
+    <!-- Verse selection -->
+    <string name="mode_manual">Choose verse</string>
+    <string name="mode_theme">By theme</string>
+    <string name="label_book">Book</string>
+    <string name="label_chapter">Chapter</string>
+    <string name="label_verse">Verse</string>
+    <string name="label_translation">Translation</string>
+    <string name="label_theme">Theme</string>
+    <string name="group_old_testament">Old Testament</string>
+    <string name="group_new_testament">New Testament</string>
+    <string name="action_random_theme">Surprise me</string>
+    <string name="action_load_verse">Load verse</string>
+    <string name="hint_select_book">Select a book</string>
+    <string name="hint_select_chapter">Select a chapter</string>
+    <string name="hint_select_verse">Select a verse</string>
+
+    <!-- Customization -->
+    <string name="section_background">Background</string>
+    <string name="section_typography">Text style</string>
+    <string name="section_banner">Signature banner</string>
+    <string name="label_font">Font</string>
+    <string name="label_font_size">Size</string>
+    <string name="label_alignment">Alignment</string>
+    <string name="label_text_color">Text color</string>
+    <string name="label_overlay">Readability overlay</string>
+    <string name="label_shadow">Text shadow</string>
+    <string name="align_left">Left</string>
+    <string name="align_center">Center</string>
+    <string name="align_right">Right</string>
+    <string name="bg_gradients">Gradients</string>
+    <string name="bg_photos">Photos</string>
+    <string name="bg_search_hint">Search backgrounds (e.g. sky, peace)</string>
+    <string name="bg_photos_need_key">Add an Unsplash or Pexels key in local.properties to search photos. Built-in gradients always work offline.</string>
+
+    <!-- Banner -->
+    <string name="banner_hint">Your name, handle or church (optional)</string>
+    <string name="banner_position">Position</string>
+    <string name="banner_pos_bottom">Bottom</string>
+    <string name="banner_pos_top">Top</string>
+    <string name="banner_pos_left">Left</string>
+    <string name="banner_pos_right">Right</string>
+    <string name="banner_empty_note">Leave empty to hide the banner completely.</string>
+
+    <!-- Export -->
+    <string name="action_share_whatsapp">Share to WhatsApp</string>
+    <string name="action_share">Share</string>
+    <string name="action_save_gallery">Save to gallery</string>
+    <string name="export_rendering">Rendering image…</string>
+    <string name="export_saved">Saved to your gallery</string>
+    <string name="export_save_failed">Couldn\'t save the image</string>
+    <string name="export_whatsapp_missing">WhatsApp isn\'t installed — opening the share sheet instead</string>
+    <string name="export_share_failed">Couldn\'t share the image</string>
+    <string name="permission_storage_rationale">Storage access is needed to save images on this Android version.</string>
+
+    <!-- Settings / about -->
+    <string name="settings_account">Account</string>
+    <string name="settings_sign_in_google">Sign in with Google (optional)</string>
+    <string name="settings_sign_out">Sign out</string>
+    <string name="settings_signed_in_as">Signed in as %1$s</string>
+    <string name="settings_account_note">Sign-in is optional. Every feature works without an account.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_terms">Terms of Use</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_offline_note">Verse text and all backgrounds are available offline.</string>
+    <string name="settings_open_source_licenses">Open-source licenses</string>
+
+    <!-- Generic -->
+    <string name="action_retry">Retry</string>
+    <string name="action_dismiss">Dismiss</string>
+    <string name="loading">Loading…</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_offline_verse">Couldn\'t reach the verse service. Showing the offline copy.</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_canvas_preview">Verse image preview</string>
+    <string name="cd_color_swatch">Color option</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base theme; Compose drives the actual Material3 colors at runtime.
+         This XML theme only governs the splash/window before Compose loads. -->
+    <style name="Theme.DivineCanvas" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/purple_dark</item>
+        <item name="android:statusBarColor">@color/purple_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

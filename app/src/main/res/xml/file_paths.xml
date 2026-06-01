@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Rendered images are written to cache/shared_images and exposed to
+         other apps for sharing. -->
+    <cache-path name="shared_images" path="shared_images/" />
+    <external-cache-path name="external_shared_images" path="shared_images/" />
+</paths>

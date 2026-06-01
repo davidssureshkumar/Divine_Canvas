@@ -1,0 +1,29 @@
+# Copy this file to `local.properties` and fill in what you have.
+# EVERYTHING HERE IS OPTIONAL — the app is fully functional with none of it set
+# (offline verses + built-in gradient backgrounds, no sign-in required).
+
+# Android SDK location (Android Studio sets this automatically on first sync).
+sdk.dir=C\:\\Users\\YOUR_USER\\AppData\\Local\\Android\\Sdk
+
+# --- Optional photo backgrounds ---
+# Get a free key at https://unsplash.com/developers (preferred)
+UNSPLASH_ACCESS_KEY=
+# ...or https://www.pexels.com/api/ (used if Unsplash key is blank)
+PEXELS_API_KEY=
+
+# --- Optional licensed translations (NIV / NKJV / ESV) ---
+# These are COPYRIGHTED and cannot be bundled. To enable them, provide your OWN
+# key from https://scripture.api.bible and Bible IDs your key is entitled to.
+# Public-domain translations (KJV offline, WEB, ASV) work with none of this set.
+API_BIBLE_KEY=
+API_BIBLE_ID_NIV=
+API_BIBLE_ID_NKJV=
+API_BIBLE_ID_ESV=
+
+# --- Optional Google Sign-In ---
+# Web client ID from a Google Cloud OAuth 2.0 "Web application" credential.
+GOOGLE_WEB_CLIENT_ID=
+
+# --- Optional store/legal links (sensible defaults are used if blank) ---
+PRIVACY_POLICY_URL=
+TERMS_URL=
