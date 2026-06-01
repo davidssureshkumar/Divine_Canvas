@@ -96,10 +96,12 @@ gradient backgrounds, no sign-in). See that file for where to get free keys.
 
 ## Offline data note
 
-`assets/bible/versification.json` ships with the standard Protestant (KJV) verse
-counts so the Book/Chapter/Verse dropdowns work with zero network. These numbers
-were authored by hand; **validate them against a trusted source before a store
-release** — a correction is a one-line edit.
+`assets/bible/versification.json` holds the standard Protestant (KJV) verse counts
+so the Book/Chapter/Verse dropdowns work with zero network. These counts are
+**verified by a unit test** (`KjvVersificationIntegrityTest`) that cross-checks them
+against the actual verse counts in the bundled `kjv.json` text — so the dropdowns
+can never offer a verse the offline KJV doesn't have. The KJV text itself uses the
+standard, verse-numbered public-domain dataset.
 
 ## Fonts
 
@@ -115,9 +117,14 @@ Font License; the license is bundled at `assets/licenses/PlayfairDisplay-OFL.txt
 - Permissions are minimal: `INTERNET`, `ACCESS_NETWORK_STATE`, and
   `WRITE_EXTERNAL_STORAGE` only on API ≤ 28.
 - Privacy Policy / Terms links surface in **Settings → About** (configurable URLs).
-- **Before publishing:** replace the `release` signing config (currently the debug
-  key so `assembleRelease` works locally) with your own keystore, and confirm the
-  versification data.
+- Targets **API 35** (`compileSdk`/`targetSdk`) to meet Play's target-API requirement.
+- **App Bundle:** the `Release AAB` workflow (`.github/workflows/release.yml`) builds
+  a `.aab` via `:app:bundleRelease`. Release signing reads a real upload key from CI
+  secrets (`KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
+  `ANDROID_KEY_PASSWORD`) or a local `keystore.properties`; without one it falls back
+  to debug signing so the build still succeeds (but isn't uploadable).
+- **Before publishing:** generate your upload key, add the four secrets above, enroll
+  in Play App Signing, and fill in the Data Safety form + a real Privacy Policy URL.
 
 ## Tests
 

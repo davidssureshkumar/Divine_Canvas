@@ -17,14 +17,28 @@ val localProps = Properties().apply {
 }
 fun prop(name: String): String = (localProps.getProperty(name) ?: "").trim()
 
+// Release signing: read from keystore.properties (local) or env vars (CI secrets).
+// When no keystore is available the release build falls back to debug signing, so
+// `assembleRelease`/`bundleRelease` still succeed for verification (but such an
+// artifact is NOT uploadable to Play).
+val keystoreProps = Properties().apply {
+    val f = rootProject.file("keystore.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+fun signingProp(key: String, env: String): String? =
+    (keystoreProps.getProperty(key) ?: System.getenv(env))?.takeIf { it.isNotBlank() }
+
+val releaseStoreFilePath = signingProp("storeFile", "ANDROID_KEYSTORE_FILE")
+val hasReleaseSigning = releaseStoreFilePath != null && file(releaseStoreFilePath).exists()
+
 android {
     namespace = "com.divinecanvas"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.divinecanvas"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
 
@@ -48,6 +62,17 @@ android {
         buildConfigField("String", "TERMS_URL", "\"${prop("TERMS_URL").ifEmpty { "https://divinecanvas.app/terms" }}\"")
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseStoreFilePath!!)
+                storePassword = signingProp("storePassword", "ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = signingProp("keyAlias", "ANDROID_KEY_ALIAS")
+                keyPassword = signingProp("keyPassword", "ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -61,9 +86,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Configure signing in CI / Android Studio; debug signing used here so
-            // `assembleRelease` succeeds out of the box for local verification.
-            signingConfig = signingConfigs.getByName("debug")
+            // Real upload key when configured (keystore.properties / CI secrets);
+            // otherwise debug signing so the build still succeeds for verification.
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 
