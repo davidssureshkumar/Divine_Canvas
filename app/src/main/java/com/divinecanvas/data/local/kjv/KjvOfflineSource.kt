@@ -62,7 +62,8 @@ class KjvOfflineSource @Inject constructor(
 
     private companion object {
         const val ASSET = "bible/kjv.json"
-        val BRACES = Regex("\\{[^}]*}")
+        // Both braces escaped: Android's ICU regex engine rejects a bare '}'.
+        val BRACES = Regex("\\{[^}]*\\}")
         val WHITESPACE = Regex("\\s+")
     }
 }
