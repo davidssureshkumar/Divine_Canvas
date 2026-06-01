@@ -1,8 +1,11 @@
 *.iml
 .gradle
+.kotlin/
 /local.properties
 /.idea
 .DS_Store
+# Ignore Gradle build output at the root AND in every module.
+build/
 /build
 /dist
 /captures
