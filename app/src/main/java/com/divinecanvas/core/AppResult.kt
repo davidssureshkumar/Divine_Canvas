@@ -11,7 +11,7 @@ sealed interface AppResult<out T> {
 
     fun getOrNull(): T? = (this as? Success)?.data
 
-    inline fun <R> map(transform: (T) -> R): AppResult<R> = when (this) {
+    fun <R> map(transform: (T) -> R): AppResult<R> = when (this) {
         is Success -> Success(transform(data), fromCache)
         is Failure -> this
     }
