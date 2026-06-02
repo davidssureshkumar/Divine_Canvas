@@ -5,10 +5,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore(name = "user_prefs")
 
@@ -17,11 +17,14 @@ data class AccountInfo(
     val displayName: String?,
     val email: String?,
 ) {
-    val isSignedIn: Boolean get() = !email.isNullOrBlank() || !displayName.isNullOrBlank()
+    val isSignedIn: Boolean
+        get() = !email.isNullOrBlank() || !displayName.isNullOrBlank()
 }
 
 @Singleton
-class UserPreferences @Inject constructor(
+class UserPreferences
+@Inject
+constructor(
     @ApplicationContext private val context: Context,
 ) {
     private object Keys {
@@ -30,9 +33,8 @@ class UserPreferences @Inject constructor(
         val EDITOR_SNAPSHOT = stringPreferencesKey("editor_snapshot")
     }
 
-    val accountInfo: Flow<AccountInfo> = context.dataStore.data.map { prefs ->
-        AccountInfo(prefs[Keys.NAME], prefs[Keys.EMAIL])
-    }
+    val accountInfo: Flow<AccountInfo> =
+        context.dataStore.data.map { prefs -> AccountInfo(prefs[Keys.NAME], prefs[Keys.EMAIL]) }
 
     /** Serialized [com.divinecanvas.ui.editor.EditorSnapshot] JSON, or null. */
     val editorSnapshotJson: Flow<String?> =

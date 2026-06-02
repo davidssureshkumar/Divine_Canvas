@@ -27,14 +27,20 @@ class BibleRepositoryImplTest {
     private val api = mockk<BibleApi>()
     private val apiBibleApi = mockk<ApiBibleApi>(relaxed = true)
     private val kjvSource = mockk<KjvOfflineSource>(relaxed = true)
-    private val repo = BibleRepositoryImpl(dao, api, apiBibleApi, kjvSource, UnconfinedTestDispatcher())
+    private val repo =
+        BibleRepositoryImpl(dao, api, apiBibleApi, kjvSource, UnconfinedTestDispatcher())
 
     @Test
     fun `cache hit returns immediately without hitting the network`() = runTest {
-        coEvery { dao.getCachedVerse("John", 3, 16, "web") } returns VerseEntity(
-            book = "John", chapter = 3, verse = 16, translation = "web",
-            reference = "John 3:16", text = "For God so loved the world…",
-        )
+        coEvery { dao.getCachedVerse("John", 3, 16, "web") } returns
+            VerseEntity(
+                book = "John",
+                chapter = 3,
+                verse = 16,
+                translation = "web",
+                reference = "John 3:16",
+                text = "For God so loved the world…",
+            )
 
         val result = repo.getVerse("John", 3, 16, Translation.WEB)
 
@@ -46,11 +52,12 @@ class BibleRepositoryImplTest {
     @Test
     fun `cache miss fetches from api and caches the result`() = runTest {
         coEvery { dao.getCachedVerse(any(), any(), any(), any()) } returns null
-        coEvery { api.getVerse(any(), any()) } returns BibleApiResponse(
-            reference = "Psalms 23:1",
-            text = "Yahweh is my shepherd; I shall lack nothing.",
-            translationId = "web",
-        )
+        coEvery { api.getVerse(any(), any()) } returns
+            BibleApiResponse(
+                reference = "Psalms 23:1",
+                text = "Yahweh is my shepherd; I shall lack nothing.",
+                translationId = "web",
+            )
 
         val result = repo.getVerse("Psalms", 23, 1, Translation.WEB)
 

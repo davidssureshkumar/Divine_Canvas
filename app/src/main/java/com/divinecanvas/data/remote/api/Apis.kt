@@ -41,9 +41,8 @@ interface PexelsApi {
 }
 
 /**
- * Optional licensed-translation provider (NIV/NKJV/ESV via the user's own key).
- * Base url: https://api.scripture.api.bible/v1/
- * verseId format is "BOOK.CHAPTER.VERSE", e.g. "JHN.3.16".
+ * Optional licensed-translation provider (NIV/NKJV/ESV via the user's own key). Base url:
+ * https://api.scripture.api.bible/v1/ verseId format is "BOOK.CHAPTER.VERSE", e.g. "JHN.3.16".
  */
 interface ApiBibleApi {
     @GET("bibles/{bibleId}/verses/{verseId}")

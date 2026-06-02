@@ -4,8 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // --- Unsplash ---
-@Serializable
-data class UnsplashSearchResponse(val results: List<UnsplashPhoto> = emptyList())
+@Serializable data class UnsplashSearchResponse(val results: List<UnsplashPhoto> = emptyList())
 
 @Serializable
 data class UnsplashPhoto(
@@ -20,12 +19,10 @@ data class UnsplashUrls(
     val small: String = "",
 )
 
-@Serializable
-data class UnsplashUser(val name: String = "")
+@Serializable data class UnsplashUser(val name: String = "")
 
 // --- Pexels ---
-@Serializable
-data class PexelsSearchResponse(val photos: List<PexelsPhoto> = emptyList())
+@Serializable data class PexelsSearchResponse(val photos: List<PexelsPhoto> = emptyList())
 
 @Serializable
 data class PexelsPhoto(

@@ -7,26 +7,34 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.gradle.play.publisher)
+    alias(libs.plugins.spotless)
 }
 
 // Read optional API keys from local.properties (never committed). All keys are
 // optional: the app falls back to bundled offline content when they are absent.
-val localProps = Properties().apply {
-    val f = rootProject.file("local.properties")
-    if (f.exists()) f.inputStream().use { load(it) }
-}
+val localProps =
+    Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) f.inputStream().use { load(it) }
+    }
+
 fun prop(name: String): String = (localProps.getProperty(name) ?: "").trim()
 
 // Release signing: read from keystore.properties (local) or env vars (CI secrets).
 // When no keystore is available the release build falls back to debug signing, so
 // `assembleRelease`/`bundleRelease` still succeed for verification (but such an
 // artifact is NOT uploadable to Play).
-val keystoreProps = Properties().apply {
-    val f = rootProject.file("keystore.properties")
-    if (f.exists()) f.inputStream().use { load(it) }
-}
-fun signingProp(key: String, env: String): String? =
-    (keystoreProps.getProperty(key) ?: System.getenv(env))?.takeIf { it.isNotBlank() }
+val keystoreProps =
+    Properties().apply {
+        val f = rootProject.file("keystore.properties")
+        if (f.exists()) f.inputStream().use { load(it) }
+    }
+
+fun signingProp(
+    key: String,
+    env: String,
+): String? = (keystoreProps.getProperty(key) ?: System.getenv(env))?.takeIf { it.isNotBlank() }
 
 val releaseStoreFilePath = signingProp("storeFile", "ANDROID_KEYSTORE_FILE")
 val hasReleaseSigning = releaseStoreFilePath != null && file(releaseStoreFilePath).exists()
@@ -53,13 +61,25 @@ android {
         // licensed translations (NIV/NKJV/ESV) stay disabled. Bible IDs must match
         // the versions your key is entitled to; defaults are common public IDs.
         buildConfigField("String", "API_BIBLE_KEY", "\"${prop("API_BIBLE_KEY")}\"")
-        buildConfigField("String", "API_BIBLE_ID_NIV", "\"${prop("API_BIBLE_ID_NIV").ifEmpty { "78a9f6124f344018-01" }}\"")
+        buildConfigField(
+            "String",
+            "API_BIBLE_ID_NIV",
+            "\"${prop("API_BIBLE_ID_NIV").ifEmpty { "78a9f6124f344018-01" }}\""
+        )
         buildConfigField("String", "API_BIBLE_ID_NKJV", "\"${prop("API_BIBLE_ID_NKJV")}\"")
         buildConfigField("String", "API_BIBLE_ID_ESV", "\"${prop("API_BIBLE_ID_ESV")}\"")
         // Web client id for optional Google Sign-In via Credential Manager.
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${prop("GOOGLE_WEB_CLIENT_ID")}\"")
-        buildConfigField("String", "PRIVACY_POLICY_URL", "\"${prop("PRIVACY_POLICY_URL").ifEmpty { "https://divinecanvas.app/privacy" }}\"")
-        buildConfigField("String", "TERMS_URL", "\"${prop("TERMS_URL").ifEmpty { "https://divinecanvas.app/terms" }}\"")
+        buildConfigField(
+            "String",
+            "PRIVACY_POLICY_URL",
+            "\"${prop("PRIVACY_POLICY_URL").ifEmpty { "https://divinecanvas.app/privacy" }}\""
+        )
+        buildConfigField(
+            "String",
+            "TERMS_URL",
+            "\"${prop("TERMS_URL").ifEmpty { "https://divinecanvas.app/terms" }}\""
+        )
     }
 
     signingConfigs {
@@ -84,15 +104,16 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             // Real upload key when configured (keystore.properties / CI secrets);
             // otherwise debug signing so the build still succeeds for verification.
-            signingConfig = if (hasReleaseSigning) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
+            signingConfig =
+                if (hasReleaseSigning) {
+                    signingConfigs.getByName("release")
+                } else {
+                    signingConfigs.getByName("debug")
+                }
         }
     }
 
@@ -110,11 +131,7 @@ android {
         buildConfig = true
     }
 
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+    packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 
     testOptions {
         unitTests {
@@ -132,8 +149,31 @@ android {
 }
 
 // Export Room schemas for migration tracking / CI verification.
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
+ksp { arg("room.schemaLocation", "$projectDir/schemas") }
+
+// Gradle Play Publisher — auto-upload the AAB to Google Play.
+// Credentials are resolved from the ANDROID_PUBLISHER_CREDENTIALS env var (CI) or a
+// local service-account JSON; no secret is stored in the repo. Publish tasks only
+// run when explicitly invoked (e.g. `:app:publishReleaseBundle`), so normal
+// build/test workflows are unaffected.
+play {
+    track.set("internal")
+    defaultToAppBundles.set(true)
+    // The app must already exist on Play with one manual release before the first
+    // automated publish (Google requires the initial upload via the Console).
+}
+
+// Code formatting (ktlint via Spotless). Runs only when invoked
+// (`:app:spotlessApply` / `:app:spotlessCheck`), so it never blocks normal builds.
+spotless {
+    kotlin {
+        target("src/**/*.kt")
+        ktfmt("0.49").kotlinlangStyle()
+    }
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktfmt("0.49").kotlinlangStyle()
+    }
 }
 
 dependencies {

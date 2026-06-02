@@ -14,6 +14,7 @@ import com.divinecanvas.domain.model.Translation
 import com.divinecanvas.domain.repository.BackgroundRepository
 import com.divinecanvas.domain.repository.BibleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,19 +27,21 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 @HiltViewModel
-class EditorViewModel @Inject constructor(
+class EditorViewModel
+@Inject
+constructor(
     private val bibleRepository: BibleRepository,
     private val backgroundRepository: BackgroundRepository,
     private val userPreferences: UserPreferences,
     private val json: Json,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        EditorUiState(photoSearchAvailable = backgroundRepository.photoSearchAvailable)
-    )
+    private val _uiState =
+        MutableStateFlow(
+            EditorUiState(photoSearchAvailable = backgroundRepository.photoSearchAvailable)
+        )
     val uiState: StateFlow<EditorUiState> = _uiState.asStateFlow()
 
     init {
@@ -78,13 +81,13 @@ class EditorViewModel @Inject constructor(
     fun onModeChange(mode: SelectionMode) = _uiState.update { it.copy(mode = mode) }
 
     // --- Manual selection (reactive cascade) ---
-    fun onBookSelected(book: BibleBook) = _uiState.update {
-        it.copy(selectedBook = book, selectedChapter = null, selectedVerse = null)
-    }
+    fun onBookSelected(book: BibleBook) =
+        _uiState.update {
+            it.copy(selectedBook = book, selectedChapter = null, selectedVerse = null)
+        }
 
-    fun onChapterSelected(chapter: Int) = _uiState.update {
-        it.copy(selectedChapter = chapter, selectedVerse = null)
-    }
+    fun onChapterSelected(chapter: Int) =
+        _uiState.update { it.copy(selectedChapter = chapter, selectedVerse = null) }
 
     fun onVerseSelected(verse: Int) = _uiState.update { it.copy(selectedVerse = verse) }
 
@@ -114,7 +117,8 @@ class EditorViewModel @Inject constructor(
                 val verse = state.selectedVerse ?: return
                 _uiState.update { it.copy(isLoadingVerse = true) }
                 viewModelScope.launch {
-                    val result = bibleRepository.getVerse(book.name, chapter, verse, state.translation)
+                    val result =
+                        bibleRepository.getVerse(book.name, chapter, verse, state.translation)
                     applyVerseResult(result)
                 }
             }
@@ -123,26 +127,29 @@ class EditorViewModel @Inject constructor(
 
     private fun applyVerseResult(result: AppResult<com.divinecanvas.domain.model.Verse>) {
         when (result) {
-            is AppResult.Success -> _uiState.update {
-                it.copy(
-                    isLoadingVerse = false,
-                    canvas = it.canvas.copy(verse = result.data),
-                    userMessage = if (result.fromCache) "Showing the offline copy" else null,
-                )
-            }
-            is AppResult.Failure -> _uiState.update {
-                it.copy(
-                    isLoadingVerse = false,
-                    userMessage = when (result.message) {
-                        "licensed_no_key" ->
-                            "NIV, NKJV & ESV are copyrighted — add your own scripture.api.bible key " +
-                                "(API_BIBLE_KEY in local.properties) to use them."
-                        "licensed_no_id" ->
-                            "No Bible ID is configured for this licensed translation."
-                        else -> "Couldn't load the verse. Check your connection."
-                    },
-                )
-            }
+            is AppResult.Success ->
+                _uiState.update {
+                    it.copy(
+                        isLoadingVerse = false,
+                        canvas = it.canvas.copy(verse = result.data),
+                        userMessage = if (result.fromCache) "Showing the offline copy" else null,
+                    )
+                }
+            is AppResult.Failure ->
+                _uiState.update {
+                    it.copy(
+                        isLoadingVerse = false,
+                        userMessage =
+                            when (result.message) {
+                                "licensed_no_key" ->
+                                    "NIV, NKJV & ESV are copyrighted — add your own scripture.api.bible key " +
+                                        "(API_BIBLE_KEY in local.properties) to use them."
+                                "licensed_no_id" ->
+                                    "No Bible ID is configured for this licensed translation."
+                                else -> "Couldn't load the verse. Check your connection."
+                            },
+                    )
+                }
         }
     }
 
@@ -161,15 +168,17 @@ class EditorViewModel @Inject constructor(
         _uiState.update { it.copy(isSearchingPhotos = true) }
         viewModelScope.launch {
             when (val result = backgroundRepository.searchPhotos(query)) {
-                is AppResult.Success -> _uiState.update {
-                    it.copy(isSearchingPhotos = false, photoResults = result.data)
-                }
-                is AppResult.Failure -> _uiState.update {
-                    it.copy(
-                        isSearchingPhotos = false,
-                        userMessage = "Photo search failed — using gradients.",
-                    )
-                }
+                is AppResult.Success ->
+                    _uiState.update {
+                        it.copy(isSearchingPhotos = false, photoResults = result.data)
+                    }
+                is AppResult.Failure ->
+                    _uiState.update {
+                        it.copy(
+                            isSearchingPhotos = false,
+                            userMessage = "Photo search failed — using gradients.",
+                        )
+                    }
             }
         }
     }
@@ -195,13 +204,19 @@ class EditorViewModel @Inject constructor(
 
     // --- Banner ---
     fun onBannerTextChange(text: String) =
-        _uiState.update { it.copy(canvas = it.canvas.copy(banner = it.canvas.banner.copy(text = text))) }
+        _uiState.update {
+            it.copy(canvas = it.canvas.copy(banner = it.canvas.banner.copy(text = text)))
+        }
 
     fun onBannerPositionChange(position: BannerPosition) =
-        _uiState.update { it.copy(canvas = it.canvas.copy(banner = it.canvas.banner.copy(position = position))) }
+        _uiState.update {
+            it.copy(canvas = it.canvas.copy(banner = it.canvas.banner.copy(position = position)))
+        }
 
     fun onBannerColorChange(color: Color) =
-        _uiState.update { it.copy(canvas = it.canvas.copy(banner = it.canvas.banner.copy(color = color))) }
+        _uiState.update {
+            it.copy(canvas = it.canvas.copy(banner = it.canvas.banner.copy(color = color)))
+        }
 
     fun onMessageShown() = _uiState.update { it.copy(userMessage = null) }
 }

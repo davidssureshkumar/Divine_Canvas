@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -46,15 +45,16 @@ import com.divinecanvas.domain.model.CanvasFont
 import com.divinecanvas.ui.editor.EditorUiState
 
 /** Curated text/banner color palette (kept small and clean). */
-val TextColorPalette = listOf(
-    Color.White,
-    Color.Black,
-    Color(0xFFFFD54F),
-    Color(0xFFFF8A80),
-    Color(0xFF80D8FF),
-    Color(0xFFB9F6CA),
-    Color(0xFFEA80FC),
-)
+val TextColorPalette =
+    listOf(
+        Color.White,
+        Color.Black,
+        Color(0xFFFFD54F),
+        Color(0xFFFF8A80),
+        Color(0xFF80D8FF),
+        Color(0xFFB9F6CA),
+        Color(0xFFEA80FC),
+    )
 
 @Composable
 fun CustomizationPanel(
@@ -120,18 +120,18 @@ private fun BackgroundSection(
 
         // Gradients (always available offline)
         Row(
-            Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             gradients.forEach { gradient ->
-                val selected = (state.canvas.background as? CanvasBackground.Gradient)?.id == gradient.id
+                val selected =
+                    (state.canvas.background as? CanvasBackground.Gradient)?.id == gradient.id
                 Box(
-                    Modifier
-                        .size(48.dp)
+                    Modifier.size(48.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Brush.linearGradient(listOf(gradient.startColor, gradient.endColor)))
+                        .background(
+                            Brush.linearGradient(listOf(gradient.startColor, gradient.endColor))
+                        )
                         .border(
                             width = if (selected) 3.dp else 1.dp,
                             color = if (selected) Color.White else Color.White.copy(alpha = 0.3f),
@@ -162,26 +162,25 @@ private fun BackgroundSection(
             }
             if (state.photoResults.isNotEmpty()) {
                 Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
+                    Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     state.photoResults.forEach { photo ->
-                        val selected = (state.canvas.background as? CanvasBackground.Photo)?.id == photo.id
+                        val selected =
+                            (state.canvas.background as? CanvasBackground.Photo)?.id == photo.id
                         coil.compose.AsyncImage(
                             model = photo.thumbnailUrl,
                             contentDescription = photo.attribution,
                             contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                            modifier = Modifier
-                                .size(width = 48.dp, height = 84.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .border(
-                                    width = if (selected) 3.dp else 1.dp,
-                                    color = if (selected) Color.White else Color.Transparent,
-                                    shape = RoundedCornerShape(10.dp),
-                                )
-                                .clickable { onSelectPhoto(photo) },
+                            modifier =
+                                Modifier.size(width = 48.dp, height = 84.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .border(
+                                        width = if (selected) 3.dp else 1.dp,
+                                        color = if (selected) Color.White else Color.Transparent,
+                                        shape = RoundedCornerShape(10.dp),
+                                    )
+                                    .clickable { onSelectPhoto(photo) },
                         )
                     }
                 }
@@ -229,13 +228,22 @@ private fun TypographySection(
 
         // Alignment
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AlignButton(Icons.AutoMirrored.Filled.FormatAlignLeft, state.canvas.textAlign == TextAlign.Left) {
+            AlignButton(
+                Icons.AutoMirrored.Filled.FormatAlignLeft,
+                state.canvas.textAlign == TextAlign.Left
+            ) {
                 onAlignChange(TextAlign.Left)
             }
-            AlignButton(Icons.Filled.FormatAlignCenter, state.canvas.textAlign == TextAlign.Center) {
+            AlignButton(
+                Icons.Filled.FormatAlignCenter,
+                state.canvas.textAlign == TextAlign.Center
+            ) {
                 onAlignChange(TextAlign.Center)
             }
-            AlignButton(Icons.AutoMirrored.Filled.FormatAlignRight, state.canvas.textAlign == TextAlign.Right) {
+            AlignButton(
+                Icons.AutoMirrored.Filled.FormatAlignRight,
+                state.canvas.textAlign == TextAlign.Right
+            ) {
                 onAlignChange(TextAlign.Right)
             }
         }
@@ -253,7 +261,10 @@ private fun TypographySection(
             Text(stringResource(R.string.label_shadow), modifier = Modifier.weight(1f))
             Switch(checked = state.canvas.showShadow, onCheckedChange = onToggleShadow)
         }
-        Text(stringResource(R.string.label_overlay) + ": ${(state.canvas.overlayOpacity * 100).toInt()}%")
+        Text(
+            stringResource(R.string.label_overlay) +
+                ": ${(state.canvas.overlayOpacity * 100).toInt()}%"
+        )
         Slider(
             value = state.canvas.overlayOpacity,
             onValueChange = onOverlayChange,
@@ -304,12 +315,13 @@ private fun BannerSection(
 }
 
 @Composable
-private fun positionLabel(pos: BannerPosition): String = when (pos) {
-    BannerPosition.BOTTOM -> stringResource(R.string.banner_pos_bottom)
-    BannerPosition.TOP -> stringResource(R.string.banner_pos_top)
-    BannerPosition.LEFT -> stringResource(R.string.banner_pos_left)
-    BannerPosition.RIGHT -> stringResource(R.string.banner_pos_right)
-}
+private fun positionLabel(pos: BannerPosition): String =
+    when (pos) {
+        BannerPosition.BOTTOM -> stringResource(R.string.banner_pos_bottom)
+        BannerPosition.TOP -> stringResource(R.string.banner_pos_top)
+        BannerPosition.LEFT -> stringResource(R.string.banner_pos_left)
+        BannerPosition.RIGHT -> stringResource(R.string.banner_pos_right)
+    }
 
 @Composable
 private fun AlignButton(
@@ -317,14 +329,13 @@ private fun AlignButton(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val tint = if (selected) {
-        androidx.compose.material3.MaterialTheme.colorScheme.primary
-    } else {
-        androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
-    }
-    IconButton(onClick = onClick) {
-        Icon(icon, contentDescription = null, tint = tint)
-    }
+    val tint =
+        if (selected) {
+            androidx.compose.material3.MaterialTheme.colorScheme.primary
+        } else {
+            androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+        }
+    IconButton(onClick = onClick) { Icon(icon, contentDescription = null, tint = tint) }
 }
 
 @Composable
@@ -336,8 +347,7 @@ private fun ColorSwatchRow(
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         colors.forEach { color ->
             Box(
-                Modifier
-                    .size(32.dp)
+                Modifier.size(32.dp)
                     .clip(CircleShape)
                     .background(color)
                     .border(

@@ -11,13 +11,14 @@ import org.junit.Test
 
 class BibleBookTest {
 
-    private val genesis = BibleBook(
-        order = 1,
-        name = "Genesis",
-        abbrev = "GEN",
-        testament = Testament.OT,
-        verseCounts = listOf(31, 25, 24, 26, 32), // first 5 chapters
-    )
+    private val genesis =
+        BibleBook(
+            order = 1,
+            name = "Genesis",
+            abbrev = "GEN",
+            testament = Testament.OT,
+            verseCounts = listOf(31, 25, 24, 26, 32), // first 5 chapters
+        )
 
     @Test
     fun `chapter count reflects versification size`() {

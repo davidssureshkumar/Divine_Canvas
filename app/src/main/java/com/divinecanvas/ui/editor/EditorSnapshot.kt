@@ -15,8 +15,8 @@ import com.divinecanvas.domain.model.Verse
 import kotlinx.serialization.Serializable
 
 /**
- * Flat, serializable mirror of the editor state so the user's last verse and full
- * styling are restored on the next launch. Persisted as JSON via DataStore.
+ * Flat, serializable mirror of the editor state so the user's last verse and full styling are
+ * restored on the next launch. Persisted as JSON via DataStore.
  */
 @Serializable
 data class EditorSnapshot(
@@ -90,27 +90,29 @@ fun EditorUiState.toSnapshot(): EditorSnapshot {
 /** Rebuild a restored UI state on top of [base] (which already holds books/themes). */
 fun EditorSnapshot.restoreInto(base: EditorUiState, books: List<BibleBook>): EditorUiState {
     val book = bookName?.let { name -> books.firstOrNull { it.name == name } }
-    val restoredVerse = if (loadedText != null && loadedBook != null) {
-        Verse(
-            book = loadedBook,
-            chapter = loadedChapter ?: 0,
-            verse = loadedVerse ?: 0,
-            reference = loadedReference ?: loadedBook,
-            text = loadedText,
-            translation = loadedTranslationId ?: translationId,
-        )
-    } else null
+    val restoredVerse =
+        if (loadedText != null && loadedBook != null) {
+            Verse(
+                book = loadedBook,
+                chapter = loadedChapter ?: 0,
+                verse = loadedVerse ?: 0,
+                reference = loadedReference ?: loadedBook,
+                text = loadedText,
+                translation = loadedTranslationId ?: translationId,
+            )
+        } else null
 
-    val background: CanvasBackground = if (backgroundKind == "photo" && !photoUrl.isNullOrBlank()) {
-        CanvasBackground.Photo(
-            id = photoId ?: photoUrl,
-            url = photoUrl,
-            thumbnailUrl = photoThumb ?: photoUrl,
-            attribution = photoAttr.orEmpty(),
-        )
-    } else {
-        DefaultBackgrounds.byId(gradientId)
-    }
+    val background: CanvasBackground =
+        if (backgroundKind == "photo" && !photoUrl.isNullOrBlank()) {
+            CanvasBackground.Photo(
+                id = photoId ?: photoUrl,
+                url = photoUrl,
+                thumbnailUrl = photoThumb ?: photoUrl,
+                attribution = photoAttr.orEmpty(),
+            )
+        } else {
+            DefaultBackgrounds.byId(gradientId)
+        }
 
     return base.copy(
         mode = runCatching { SelectionMode.valueOf(mode) }.getOrDefault(SelectionMode.MANUAL),
@@ -119,33 +121,38 @@ fun EditorSnapshot.restoreInto(base: EditorUiState, books: List<BibleBook>): Edi
         selectedVerse = verse,
         translation = Translation.fromId(translationId),
         selectedTheme = theme,
-        canvas = CanvasState(
-            verse = restoredVerse,
-            background = background,
-            font = runCatching { CanvasFont.valueOf(fontName) }.getOrDefault(CanvasFont.SERIF),
-            fontSizeSp = fontSize,
-            textAlign = align.toTextAlign(),
-            textColor = Color(textColorArgb),
-            showShadow = showShadow,
-            overlayOpacity = overlay,
-            banner = BannerConfig(
-                text = bannerText,
-                position = runCatching { BannerPosition.valueOf(bannerPosition) }
-                    .getOrDefault(BannerPosition.BOTTOM),
-                color = Color(bannerColorArgb),
+        canvas =
+            CanvasState(
+                verse = restoredVerse,
+                background = background,
+                font = runCatching { CanvasFont.valueOf(fontName) }.getOrDefault(CanvasFont.SERIF),
+                fontSizeSp = fontSize,
+                textAlign = align.toTextAlign(),
+                textColor = Color(textColorArgb),
+                showShadow = showShadow,
+                overlayOpacity = overlay,
+                banner =
+                    BannerConfig(
+                        text = bannerText,
+                        position =
+                            runCatching { BannerPosition.valueOf(bannerPosition) }
+                                .getOrDefault(BannerPosition.BOTTOM),
+                        color = Color(bannerColorArgb),
+                    ),
             ),
-        ),
     )
 }
 
-private fun TextAlign.toName(): String = when (this) {
-    TextAlign.Left -> "Left"
-    TextAlign.Right -> "Right"
-    else -> "Center"
-}
+private fun TextAlign.toName(): String =
+    when (this) {
+        TextAlign.Left -> "Left"
+        TextAlign.Right -> "Right"
+        else -> "Center"
+    }
 
-private fun String.toTextAlign(): TextAlign = when (this) {
-    "Left" -> TextAlign.Left
-    "Right" -> TextAlign.Right
-    else -> TextAlign.Center
-}
+private fun String.toTextAlign(): TextAlign =
+    when (this) {
+        "Left" -> TextAlign.Left
+        "Right" -> TextAlign.Right
+        else -> TextAlign.Center
+    }

@@ -2,8 +2,7 @@ package com.divinecanvas.data.local.seed
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class VersificationFile(val books: List<SeedBook>)
+@Serializable data class VersificationFile(val books: List<SeedBook>)
 
 @Serializable
 data class SeedBook(
@@ -14,11 +13,9 @@ data class SeedBook(
     val verses: List<Int>,
 )
 
-@Serializable
-data class ThemesFile(val translation: String, val themes: List<SeedTheme>)
+@Serializable data class ThemesFile(val translation: String, val themes: List<SeedTheme>)
 
-@Serializable
-data class SeedTheme(val name: String, val verses: List<SeedThemeVerse>)
+@Serializable data class SeedTheme(val name: String, val verses: List<SeedThemeVerse>)
 
 @Serializable
 data class SeedThemeVerse(

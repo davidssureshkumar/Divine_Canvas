@@ -4,11 +4,11 @@ import android.app.Application
 import com.divinecanvas.data.local.dao.BibleDao
 import com.divinecanvas.data.local.seed.BibleSeeder
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltAndroidApp
 class DivineCanvasApp : Application() {
@@ -21,8 +21,6 @@ class DivineCanvasApp : Application() {
     override fun onCreate() {
         super.onCreate()
         // Pre-populate the offline Bible database on first launch.
-        appScope.launch {
-            runCatching { seeder.seedIfNeeded(bibleDao) }
-        }
+        appScope.launch { runCatching { seeder.seedIfNeeded(bibleDao) } }
     }
 }

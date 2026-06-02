@@ -5,7 +5,10 @@ import com.divinecanvas.domain.model.CanvasBackground
 import com.divinecanvas.domain.model.CanvasState
 import com.divinecanvas.domain.model.Translation
 
-enum class SelectionMode { MANUAL, THEME }
+enum class SelectionMode {
+    MANUAL,
+    THEME
+}
 
 data class EditorUiState(
     val mode: SelectionMode = SelectionMode.MANUAL,
@@ -14,10 +17,8 @@ data class EditorUiState(
     val selectedChapter: Int? = null,
     val selectedVerse: Int? = null,
     val translation: Translation = Translation.WEB,
-
     val themes: List<String> = emptyList(),
     val selectedTheme: String? = null,
-
     val canvas: CanvasState = CanvasState(),
 
     // Background photo search
@@ -25,7 +26,6 @@ data class EditorUiState(
     val photoQuery: String = "",
     val photoResults: List<CanvasBackground.Photo> = emptyList(),
     val isSearchingPhotos: Boolean = false,
-
     val isLoadingVerse: Boolean = false,
     val userMessage: String? = null,
 ) {
@@ -40,9 +40,10 @@ data class EditorUiState(
         }
 
     val canLoadVerse: Boolean
-        get() = when (mode) {
-            SelectionMode.MANUAL ->
-                selectedBook != null && selectedChapter != null && selectedVerse != null
-            SelectionMode.THEME -> selectedTheme != null
-        }
+        get() =
+            when (mode) {
+                SelectionMode.MANUAL ->
+                    selectedBook != null && selectedChapter != null && selectedVerse != null
+                SelectionMode.THEME -> selectedTheme != null
+            }
 }

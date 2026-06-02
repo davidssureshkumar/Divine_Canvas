@@ -13,21 +13,25 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Runs on a real Android runtime. This is the test that would have caught the
- * ICU-regex launch crash: constructing [KjvOfflineSource] compiles its regex in a
- * static initializer (which the desktop JVM tolerated but Android's ICU engine
- * rejected). It also verifies the bundled KJV asset parses and resolves correctly
- * on-device, including chapters that were previously mis-versioned.
+ * Runs on a real Android runtime. This is the test that would have caught the ICU-regex launch
+ * crash: constructing [KjvOfflineSource] compiles its regex in a static initializer (which the
+ * desktop JVM tolerated but Android's ICU engine rejected). It also verifies the bundled KJV asset
+ * parses and resolves correctly on-device, including chapters that were previously mis-versioned.
  */
 @RunWith(AndroidJUnit4::class)
 class KjvOfflineSourceInstrumentedTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
-    private val source = KjvOfflineSource(
-        context = context,
-        json = Json { ignoreUnknownKeys = true; isLenient = true },
-        ioDispatcher = Dispatchers.IO,
-    )
+    private val source =
+        KjvOfflineSource(
+            context = context,
+            json =
+                Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                },
+            ioDispatcher = Dispatchers.IO,
+        )
 
     @Test
     fun resolvesKnownVersesOnDevice() = runBlocking {

@@ -14,13 +14,15 @@ import com.divinecanvas.domain.model.Testament
 import com.divinecanvas.domain.model.Translation
 import com.divinecanvas.domain.model.Verse
 import com.divinecanvas.domain.repository.BibleRepository
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 
 @Singleton
-class BibleRepositoryImpl @Inject constructor(
+class BibleRepositoryImpl
+@Inject
+constructor(
     private val dao: BibleDao,
     private val bibleApi: BibleApi,
     private val apiBibleApi: ApiBibleApi,
@@ -28,45 +30,53 @@ class BibleRepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : BibleRepository {
 
-    override suspend fun getBooks(): List<BibleBook> = withContext(ioDispatcher) {
-        dao.getAllBooks().map { it.toDomain() }
-    }
+    override suspend fun getBooks(): List<BibleBook> =
+        withContext(ioDispatcher) { dao.getAllBooks().map { it.toDomain() } }
 
     override suspend fun getVerse(
         book: String,
         chapter: Int,
         verse: Int,
         translation: Translation,
-    ): AppResult<Verse> = withContext(ioDispatcher) {
-        val reference = "$book $chapter:$verse"
+    ): AppResult<Verse> =
+        withContext(ioDispatcher) {
+            val reference = "$book $chapter:$verse"
 
-        // 1. Cache-first (seeded theme verses + anything resolved previously).
-        dao.getCachedVerse(book, chapter, verse, translation.id)?.let {
-            return@withContext AppResult.Success(it.toVerse(translation), fromCache = false)
-        }
-
-        val bookEntity = dao.getBookByName(book)
-
-        when {
-            // 2a. KJV ships complete & offline.
-            translation == Translation.KJV -> {
-                val order = bookEntity?.order
-                if (order != null) {
-                    val offline = kjvSource.getText(order, chapter, verse)
-                    if (!offline.isNullOrBlank()) {
-                        return@withContext success(book, chapter, verse, reference, offline, translation)
-                    }
-                }
-                fetchFromBibleApi(book, chapter, verse, reference, translation)
+            // 1. Cache-first (seeded theme verses + anything resolved previously).
+            dao.getCachedVerse(book, chapter, verse, translation.id)?.let {
+                return@withContext AppResult.Success(it.toVerse(translation), fromCache = false)
             }
 
-            // 2b. Licensed (copyrighted) translations require the user's own key.
-            translation.isLicensed -> fetchLicensed(bookEntity, chapter, verse, reference, translation)
+            val bookEntity = dao.getBookByName(book)
 
-            // 2c. Other public-domain translations via the free, key-less API.
-            else -> fetchFromBibleApi(book, chapter, verse, reference, translation)
+            when {
+                // 2a. KJV ships complete & offline.
+                translation == Translation.KJV -> {
+                    val order = bookEntity?.order
+                    if (order != null) {
+                        val offline = kjvSource.getText(order, chapter, verse)
+                        if (!offline.isNullOrBlank()) {
+                            return@withContext success(
+                                book,
+                                chapter,
+                                verse,
+                                reference,
+                                offline,
+                                translation
+                            )
+                        }
+                    }
+                    fetchFromBibleApi(book, chapter, verse, reference, translation)
+                }
+
+                // 2b. Licensed (copyrighted) translations require the user's own key.
+                translation.isLicensed ->
+                    fetchLicensed(bookEntity, chapter, verse, reference, translation)
+
+                // 2c. Other public-domain translations via the free, key-less API.
+                else -> fetchFromBibleApi(book, chapter, verse, reference, translation)
+            }
         }
-    }
 
     private suspend fun fetchFromBibleApi(
         book: String,
@@ -74,22 +84,24 @@ class BibleRepositoryImpl @Inject constructor(
         verse: Int,
         reference: String,
         translation: Translation,
-    ): AppResult<Verse> = try {
-        val response = bibleApi.getVerse(reference, translation.id)
-        val text = response.text.trim().ifEmpty {
-            response.verses.joinToString(" ") { it.text.trim() }
+    ): AppResult<Verse> =
+        try {
+            val response = bibleApi.getVerse(reference, translation.id)
+            val text =
+                response.text.trim().ifEmpty {
+                    response.verses.joinToString(" ") { it.text.trim() }
+                }
+            if (text.isBlank()) error("Empty verse response")
+            success(book, chapter, verse, reference, text, translation)
+        } catch (e: Exception) {
+            // Network failure: fall back to the WEB-seeded copy if we have it.
+            val seeded = dao.getCachedVerse(book, chapter, verse, Translation.WEB.id)
+            if (seeded != null) {
+                AppResult.Success(seeded.toVerse(Translation.WEB), fromCache = true)
+            } else {
+                AppResult.Failure("offline", e)
+            }
         }
-        if (text.isBlank()) error("Empty verse response")
-        success(book, chapter, verse, reference, text, translation)
-    } catch (e: Exception) {
-        // Network failure: fall back to the WEB-seeded copy if we have it.
-        val seeded = dao.getCachedVerse(book, chapter, verse, Translation.WEB.id)
-        if (seeded != null) {
-            AppResult.Success(seeded.toVerse(Translation.WEB), fromCache = true)
-        } else {
-            AppResult.Failure("offline", e)
-        }
-    }
 
     private suspend fun fetchLicensed(
         bookEntity: BookEntity?,
@@ -106,11 +118,12 @@ class BibleRepositoryImpl @Inject constructor(
         val resolvedBook = bookEntity ?: return AppResult.Failure("offline")
 
         return try {
-            val response = apiBibleApi.getVerse(
-                apiKey = BuildConfig.API_BIBLE_KEY,
-                bibleId = bibleId,
-                verseId = "${resolvedBook.abbrev}.$chapter.$verse",
-            )
+            val response =
+                apiBibleApi.getVerse(
+                    apiKey = BuildConfig.API_BIBLE_KEY,
+                    bibleId = bibleId,
+                    verseId = "${resolvedBook.abbrev}.$chapter.$verse",
+                )
             val text = response.data.content.trim()
             if (text.isBlank()) error("Empty licensed response")
             success(resolvedBook.name, chapter, verse, reference, text, translation)
@@ -143,43 +156,46 @@ class BibleRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun bibleIdFor(translation: Translation): String = when (translation) {
-        Translation.NIV -> BuildConfig.API_BIBLE_ID_NIV
-        Translation.NKJV -> BuildConfig.API_BIBLE_ID_NKJV
-        Translation.ESV -> BuildConfig.API_BIBLE_ID_ESV
-        else -> ""
-    }
+    private fun bibleIdFor(translation: Translation): String =
+        when (translation) {
+            Translation.NIV -> BuildConfig.API_BIBLE_ID_NIV
+            Translation.NKJV -> BuildConfig.API_BIBLE_ID_NKJV
+            Translation.ESV -> BuildConfig.API_BIBLE_ID_ESV
+            else -> ""
+        }
 
-    override suspend fun getThemes(): List<String> = withContext(ioDispatcher) {
-        dao.getThemeNames()
-    }
+    override suspend fun getThemes(): List<String> =
+        withContext(ioDispatcher) { dao.getThemeNames() }
 
     override suspend fun getRandomVerseForTheme(
         theme: String,
         translation: Translation,
-    ): AppResult<Verse> = withContext(ioDispatcher) {
-        val candidates = dao.getVersesForTheme(theme)
-        if (candidates.isEmpty()) {
-            return@withContext AppResult.Failure("No verses for theme")
+    ): AppResult<Verse> =
+        withContext(ioDispatcher) {
+            val candidates = dao.getVersesForTheme(theme)
+            if (candidates.isEmpty()) {
+                return@withContext AppResult.Failure("No verses for theme")
+            }
+            val pick = candidates.random()
+            getVerse(pick.book, pick.chapter, pick.verse, translation)
         }
-        val pick = candidates.random()
-        getVerse(pick.book, pick.chapter, pick.verse, translation)
-    }
 }
 
-private fun BookEntity.toDomain(): BibleBook = BibleBook(
-    order = order,
-    name = name,
-    abbrev = abbrev,
-    testament = if (testament == "NT") Testament.NT else Testament.OT,
-    verseCounts = verseCountsCsv.split(",").mapNotNull { it.trim().toIntOrNull() },
-)
+private fun BookEntity.toDomain(): BibleBook =
+    BibleBook(
+        order = order,
+        name = name,
+        abbrev = abbrev,
+        testament = if (testament == "NT") Testament.NT else Testament.OT,
+        verseCounts = verseCountsCsv.split(",").mapNotNull { it.trim().toIntOrNull() },
+    )
 
-private fun VerseEntity.toVerse(translation: Translation): Verse = Verse(
-    book = book,
-    chapter = chapter,
-    verse = verse,
-    reference = reference,
-    text = text,
-    translation = translation.id,
-)
+private fun VerseEntity.toVerse(translation: Translation): Verse =
+    Verse(
+        book = book,
+        chapter = chapter,
+        verse = verse,
+        reference = reference,
+        text = text,
+        translation = translation.id,
+    )
