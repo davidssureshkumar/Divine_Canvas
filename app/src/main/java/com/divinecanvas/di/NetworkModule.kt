@@ -10,18 +10,21 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
+import javax.inject.Singleton
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import java.util.concurrent.TimeUnit
-import javax.inject.Qualifier
-import javax.inject.Singleton
 
 @Qualifier @Retention(AnnotationRetention.BINARY) annotation class BibleRetrofit
+
 @Qualifier @Retention(AnnotationRetention.BINARY) annotation class UnsplashRetrofit
+
 @Qualifier @Retention(AnnotationRetention.BINARY) annotation class PexelsRetrofit
+
 @Qualifier @Retention(AnnotationRetention.BINARY) annotation class ApiBibleRetrofit
 
 @Module
@@ -36,13 +39,15 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttp(): OkHttpClient {
-        val logging = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BASIC
-            } else {
-                HttpLoggingInterceptor.Level.NONE
+        val logging =
+            HttpLoggingInterceptor().apply {
+                level =
+                    if (BuildConfig.DEBUG) {
+                        HttpLoggingInterceptor.Level.BASIC
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
             }
-        }
         return OkHttpClient.Builder()
             .addInterceptor(logging)
             .connectTimeout(15, TimeUnit.SECONDS)
@@ -59,35 +64,47 @@ object NetworkModule {
             .build()
     }
 
-    @Provides @Singleton @BibleRetrofit
+    @Provides
+    @Singleton
+    @BibleRetrofit
     fun provideBibleRetrofit(client: OkHttpClient, json: Json): Retrofit =
         retrofit(BIBLE_BASE, client, json)
 
-    @Provides @Singleton @UnsplashRetrofit
+    @Provides
+    @Singleton
+    @UnsplashRetrofit
     fun provideUnsplashRetrofit(client: OkHttpClient, json: Json): Retrofit =
         retrofit(UNSPLASH_BASE, client, json)
 
-    @Provides @Singleton @PexelsRetrofit
+    @Provides
+    @Singleton
+    @PexelsRetrofit
     fun providePexelsRetrofit(client: OkHttpClient, json: Json): Retrofit =
         retrofit(PEXELS_BASE, client, json)
 
-    @Provides @Singleton @ApiBibleRetrofit
+    @Provides
+    @Singleton
+    @ApiBibleRetrofit
     fun provideApiBibleRetrofit(client: OkHttpClient, json: Json): Retrofit =
         retrofit(API_BIBLE_BASE, client, json)
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun provideBibleApi(@BibleRetrofit retrofit: Retrofit): BibleApi =
         retrofit.create(BibleApi::class.java)
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun provideUnsplashApi(@UnsplashRetrofit retrofit: Retrofit): UnsplashApi =
         retrofit.create(UnsplashApi::class.java)
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun providePexelsApi(@PexelsRetrofit retrofit: Retrofit): PexelsApi =
         retrofit.create(PexelsApi::class.java)
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun provideApiBibleApi(@ApiBibleRetrofit retrofit: Retrofit): ApiBibleApi =
         retrofit.create(ApiBibleApi::class.java)
 }

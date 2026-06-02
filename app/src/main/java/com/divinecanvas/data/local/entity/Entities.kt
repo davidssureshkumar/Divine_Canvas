@@ -5,8 +5,8 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * One row per Bible book. [verseCountsCsv] stores the per-chapter verse counts as a
- * comma-separated string so the Verse dropdown can be populated entirely offline.
+ * One row per Bible book. [verseCountsCsv] stores the per-chapter verse counts as a comma-separated
+ * string so the Verse dropdown can be populated entirely offline.
  */
 @Entity(tableName = "books")
 data class BookEntity(
@@ -18,9 +18,9 @@ data class BookEntity(
 )
 
 /**
- * Cached verse text, keyed by reference + translation. Seeded with the curated
- * theme verses (public-domain WEB) and populated with anything fetched online so
- * previously-viewed verses remain available offline.
+ * Cached verse text, keyed by reference + translation. Seeded with the curated theme verses
+ * (public-domain WEB) and populated with anything fetched online so previously-viewed verses remain
+ * available offline.
  */
 @Entity(
     tableName = "verses",

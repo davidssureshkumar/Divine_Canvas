@@ -10,17 +10,19 @@ import com.divinecanvas.data.prefs.AccountInfo
 import com.divinecanvas.data.prefs.UserPreferences
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
 
 /**
- * Optional Google Sign-In via Credential Manager. Entirely opt-in: when no web
- * client id is configured the feature reports itself unavailable and every other
- * feature in the app continues to work without an account.
+ * Optional Google Sign-In via Credential Manager. Entirely opt-in: when no web client id is
+ * configured the feature reports itself unavailable and every other feature in the app continues to
+ * work without an account.
  */
 @Singleton
-class GoogleAuthManager @Inject constructor(
+class GoogleAuthManager
+@Inject
+constructor(
     private val userPreferences: UserPreferences,
 ) {
     val isConfigured: Boolean = BuildConfig.GOOGLE_WEB_CLIENT_ID.isNotBlank()
@@ -32,21 +34,21 @@ class GoogleAuthManager @Inject constructor(
             return AppResult.Failure("Google Sign-In isn't configured for this build")
         }
         return try {
-            val option = GetGoogleIdOption.Builder()
-                .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
-                .setFilterByAuthorizedAccounts(false)
-                .setAutoSelectEnabled(false)
-                .build()
-            val request = GetCredentialRequest.Builder()
-                .addCredentialOption(option)
-                .build()
+            val option =
+                GetGoogleIdOption.Builder()
+                    .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                    .setFilterByAuthorizedAccounts(false)
+                    .setAutoSelectEnabled(false)
+                    .build()
+            val request = GetCredentialRequest.Builder().addCredentialOption(option).build()
 
-            val response = CredentialManager.create(activityContext)
-                .getCredential(activityContext, request)
+            val response =
+                CredentialManager.create(activityContext).getCredential(activityContext, request)
             val credential = response.credential
 
-            if (credential is CustomCredential &&
-                credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+            if (
+                credential is CustomCredential &&
+                    credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
             ) {
                 val googleId = GoogleIdTokenCredential.createFrom(credential.data)
                 val info = AccountInfo(googleId.displayName, googleId.id)

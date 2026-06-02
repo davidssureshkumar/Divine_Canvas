@@ -8,10 +8,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Smoke test: launch the real app (full Hilt graph + Compose UI) and confirm it
- * reaches RESUMED without crashing. The Editor is the start destination, so this
- * exercises the exact path that crashed during the Robo test (Hilt building the
- * EditorViewModel -> repositories -> KjvOfflineSource) on a real device.
+ * Smoke test: launch the real app (full Hilt graph + Compose UI) and confirm it reaches RESUMED
+ * without crashing. The Editor is the start destination, so this exercises the exact path that
+ * crashed during the Robo test (Hilt building the EditorViewModel -> repositories ->
+ * KjvOfflineSource) on a real device.
  */
 @RunWith(AndroidJUnit4::class)
 class AppLaunchTest {

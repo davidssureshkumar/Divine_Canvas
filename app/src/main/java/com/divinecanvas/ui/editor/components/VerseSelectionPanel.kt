@@ -48,28 +48,33 @@ fun VerseSelectionPanel(
                 selected = state.mode == SelectionMode.MANUAL,
                 onClick = { onModeChange(SelectionMode.MANUAL) },
                 shape = SegmentedButtonDefaults.itemShape(0, 2),
-            ) { Text(stringResource(R.string.mode_manual)) }
+            ) {
+                Text(stringResource(R.string.mode_manual))
+            }
             SegmentedButton(
                 selected = state.mode == SelectionMode.THEME,
                 onClick = { onModeChange(SelectionMode.THEME) },
                 shape = SegmentedButtonDefaults.itemShape(1, 2),
-            ) { Text(stringResource(R.string.mode_theme)) }
+            ) {
+                Text(stringResource(R.string.mode_theme))
+            }
         }
 
         when (state.mode) {
-            SelectionMode.MANUAL -> ManualSelection(
-                state = state,
-                onBookSelected = onBookSelected,
-                onChapterSelected = onChapterSelected,
-                onVerseSelected = onVerseSelected,
-                onTranslationSelected = onTranslationSelected,
-            )
-
-            SelectionMode.THEME -> ThemeSelection(
-                state = state,
-                onThemeSelected = onThemeSelected,
-                onRandomTheme = onRandomTheme,
-            )
+            SelectionMode.MANUAL ->
+                ManualSelection(
+                    state = state,
+                    onBookSelected = onBookSelected,
+                    onChapterSelected = onChapterSelected,
+                    onVerseSelected = onVerseSelected,
+                    onTranslationSelected = onTranslationSelected,
+                )
+            SelectionMode.THEME ->
+                ThemeSelection(
+                    state = state,
+                    onThemeSelected = onThemeSelected,
+                    onRandomTheme = onRandomTheme,
+                )
         }
 
         Button(
@@ -99,16 +104,18 @@ private fun ManualSelection(
     val otHeader = stringResource(R.string.group_old_testament)
     val ntHeader = stringResource(R.string.group_new_testament)
 
-    val bookOptions = remember(state.books) {
-        var lastTestament: Testament? = null
-        state.books.map { book ->
-            val header = if (book.testament != lastTestament) {
-                if (book.testament == Testament.OT) otHeader else ntHeader
-            } else null
-            lastTestament = book.testament
-            DropdownOption(value = book, label = book.name, sectionHeader = header)
+    val bookOptions =
+        remember(state.books) {
+            var lastTestament: Testament? = null
+            state.books.map { book ->
+                val header =
+                    if (book.testament != lastTestament) {
+                        if (book.testament == Testament.OT) otHeader else ntHeader
+                    } else null
+                lastTestament = book.testament
+                DropdownOption(value = book, label = book.name, sectionHeader = header)
+            }
         }
-    }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         LabeledDropdown(
@@ -152,9 +159,7 @@ private fun ThemeSelection(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             state.themes.forEach { theme ->
@@ -162,9 +167,10 @@ private fun ThemeSelection(
                     selected = state.selectedTheme == theme,
                     onClick = { onThemeSelected(theme) },
                     label = { Text(theme) },
-                    leadingIcon = if (state.selectedTheme == theme) {
-                        { Icon(Icons.Filled.AutoAwesome, contentDescription = null) }
-                    } else null,
+                    leadingIcon =
+                        if (state.selectedTheme == theme) {
+                            { Icon(Icons.Filled.AutoAwesome, contentDescription = null) }
+                        } else null,
                     modifier = Modifier.padding(vertical = 4.dp),
                 )
             }

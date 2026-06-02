@@ -12,9 +12,10 @@ val DivineCanvasTypography = Typography()
 val PlayfairDisplay = FontFamily(Font(R.font.playfair_display))
 
 /** Maps a [CanvasFont] to a real [FontFamily]. */
-fun CanvasFont.toFontFamily(): FontFamily = when (this) {
-    CanvasFont.SANS -> FontFamily.SansSerif
-    CanvasFont.SERIF -> FontFamily.Serif
-    CanvasFont.PLAYFAIR -> PlayfairDisplay
-    CanvasFont.MONO -> FontFamily.Monospace
-}
+fun CanvasFont.toFontFamily(): FontFamily =
+    when (this) {
+        CanvasFont.SANS -> FontFamily.SansSerif
+        CanvasFont.SERIF -> FontFamily.Serif
+        CanvasFont.PLAYFAIR -> PlayfairDisplay
+        CanvasFont.MONO -> FontFamily.Monospace
+    }

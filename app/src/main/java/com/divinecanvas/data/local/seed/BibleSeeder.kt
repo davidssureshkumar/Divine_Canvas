@@ -9,9 +9,9 @@ import com.divinecanvas.domain.model.Translation
 import kotlinx.serialization.json.Json
 
 /**
- * Populates the Room database from bundled JSON assets the first time the app runs
- * (or whenever the tables are empty). This keeps all versification and theme data
- * fully offline while remaining trivially editable.
+ * Populates the Room database from bundled JSON assets the first time the app runs (or whenever the
+ * tables are empty). This keeps all versification and theme data fully offline while remaining
+ * trivially editable.
  */
 class BibleSeeder(
     private val context: Context,
@@ -25,15 +25,16 @@ class BibleSeeder(
     private suspend fun seedBooks(dao: BibleDao) {
         val raw = readAsset("bible/versification.json")
         val parsed = json.decodeFromString(VersificationFile.serializer(), raw)
-        val books = parsed.books.map { b ->
-            BookEntity(
-                order = b.order,
-                name = b.name,
-                abbrev = b.abbrev,
-                testament = b.testament,
-                verseCountsCsv = b.verses.joinToString(","),
-            )
-        }
+        val books =
+            parsed.books.map { b ->
+                BookEntity(
+                    order = b.order,
+                    name = b.name,
+                    abbrev = b.abbrev,
+                    testament = b.testament,
+                    verseCountsCsv = b.verses.joinToString(","),
+                )
+            }
         dao.insertBooks(books)
     }
 
@@ -45,12 +46,13 @@ class BibleSeeder(
         val themeVerses = mutableListOf<ThemeVerseEntity>()
         for (theme in parsed.themes) {
             for (v in theme.verses) {
-                themeVerses += ThemeVerseEntity(
-                    theme = theme.name,
-                    book = v.book,
-                    chapter = v.chapter,
-                    verse = v.verse,
-                )
+                themeVerses +=
+                    ThemeVerseEntity(
+                        theme = theme.name,
+                        book = v.book,
+                        chapter = v.chapter,
+                        verse = v.verse,
+                    )
                 // Cache the curated text so theme verses (and these references) work offline.
                 dao.cacheVerse(
                     VerseEntity(

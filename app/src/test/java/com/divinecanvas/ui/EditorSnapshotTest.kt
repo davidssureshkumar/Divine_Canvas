@@ -39,23 +39,26 @@ class EditorSnapshotTest {
 
     @Test
     fun `snapshot round-trips selection, verse and styling`() {
-        val original = EditorUiState(
-            selectedBook = john,
-            selectedChapter = 3,
-            selectedVerse = 16,
-            translation = Translation.KJV,
-            canvas = CanvasState(
-                verse = Verse("John", 3, 16, "John 3:16", "For God so loved…", "kjv"),
-                font = CanvasFont.PLAYFAIR,
-                fontSizeSp = 42f,
-                textAlign = TextAlign.Left,
-                textColor = Color(0xFFFFD54F),
-                showShadow = false,
-                overlayOpacity = 0.5f,
-            ),
-        )
+        val original =
+            EditorUiState(
+                selectedBook = john,
+                selectedChapter = 3,
+                selectedVerse = 16,
+                translation = Translation.KJV,
+                canvas =
+                    CanvasState(
+                        verse = Verse("John", 3, 16, "John 3:16", "For God so loved…", "kjv"),
+                        font = CanvasFont.PLAYFAIR,
+                        fontSizeSp = 42f,
+                        textAlign = TextAlign.Left,
+                        textColor = Color(0xFFFFD54F),
+                        showShadow = false,
+                        overlayOpacity = 0.5f,
+                    ),
+            )
 
-        val restored = original.toSnapshot().restoreInto(EditorUiState(books = listOf(john)), listOf(john))
+        val restored =
+            original.toSnapshot().restoreInto(EditorUiState(books = listOf(john)), listOf(john))
 
         assertEquals(john, restored.selectedBook)
         assertEquals(3, restored.selectedChapter)

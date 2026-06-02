@@ -43,8 +43,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.divinecanvas.R
 import com.divinecanvas.ui.canvas.ImageExporter
 import com.divinecanvas.ui.canvas.VerseCanvas
@@ -82,9 +82,10 @@ fun EditorScreen(
 
     // Storage permission only matters on API <= 28 for gallery saves.
     val needsLegacyPermission = Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
-    val storagePermission = rememberPermissionState(
-        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    )
+    val storagePermission =
+        rememberPermissionState(
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        )
 
     suspend fun renderBitmap() = exportLayer.toImageBitmap().asAndroidBitmap()
 
@@ -113,115 +114,117 @@ fun EditorScreen(
         // it exists only to be captured into [exportLayer] at print resolution.
         VerseCanvas(
             state = state.canvas,
-            modifier = Modifier
-                .requiredSize(exportWidth, exportHeight)
-                .drawWithContent {
+            modifier =
+                Modifier.requiredSize(exportWidth, exportHeight).drawWithContent {
                     exportLayer.record { this@drawWithContent.drawContent() }
                     drawContent()
                 },
         )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.screen_editor_title)) },
-                actions = {
-                    IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.nav_settings))
-                    }
-                },
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            // --- Live 9:16 preview ---
-            VerseCanvas(
-                state = state.canvas,
-                modifier = Modifier
-                    .fillMaxWidth(0.6f)
-                    .align(Alignment.CenterHorizontally)
-                    .aspectRatio(9f / 16f)
-                    .clip(RoundedCornerShape(16.dp)),
-            )
-
-            // --- Export actions ---
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Button(
-                    onClick = { shareToWhatsApp() },
-                    enabled = state.canvas.verse != null,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(Icons.Filled.Share, contentDescription = null)
-                    Text("  " + stringResource(R.string.action_share_whatsapp))
-                }
-                OutlinedButton(
-                    onClick = {
-                        if (needsLegacyPermission && !storagePermission.status.isGrantedSafe()) {
-                            storagePermission.launchPermissionRequest()
-                        } else {
-                            saveToGallery()
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.screen_editor_title)) },
+                    actions = {
+                        IconButton(onClick = onOpenSettings) {
+                            Icon(
+                                Icons.Filled.Settings,
+                                contentDescription = stringResource(R.string.nav_settings)
+                            )
                         }
                     },
-                    enabled = state.canvas.verse != null,
-                    modifier = Modifier.weight(1f),
+                )
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+        ) { padding ->
+            Column(
+                modifier =
+                    Modifier.fillMaxSize()
+                        .padding(padding)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                // --- Live 9:16 preview ---
+                VerseCanvas(
+                    state = state.canvas,
+                    modifier =
+                        Modifier.fillMaxWidth(0.6f)
+                            .align(Alignment.CenterHorizontally)
+                            .aspectRatio(9f / 16f)
+                            .clip(RoundedCornerShape(16.dp)),
+                )
+
+                // --- Export actions ---
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Icon(Icons.Filled.Download, contentDescription = null)
-                    Text("  " + stringResource(R.string.action_save_gallery))
+                    Button(
+                        onClick = { shareToWhatsApp() },
+                        enabled = state.canvas.verse != null,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Icon(Icons.Filled.Share, contentDescription = null)
+                        Text("  " + stringResource(R.string.action_share_whatsapp))
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            if (
+                                needsLegacyPermission && !storagePermission.status.isGrantedSafe()
+                            ) {
+                                storagePermission.launchPermissionRequest()
+                            } else {
+                                saveToGallery()
+                            }
+                        },
+                        enabled = state.canvas.verse != null,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Icon(Icons.Filled.Download, contentDescription = null)
+                        Text("  " + stringResource(R.string.action_save_gallery))
+                    }
                 }
+
+                // --- Verse selection ---
+                VerseSelectionPanel(
+                    state = state,
+                    onModeChange = viewModel::onModeChange,
+                    onBookSelected = viewModel::onBookSelected,
+                    onChapterSelected = viewModel::onChapterSelected,
+                    onVerseSelected = viewModel::onVerseSelected,
+                    onTranslationSelected = viewModel::onTranslationSelected,
+                    onThemeSelected = viewModel::onThemeSelected,
+                    onRandomTheme = viewModel::onRandomThemeVerse,
+                    onLoadVerse = viewModel::onLoadVerse,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                if (state.isLoadingVerse) {
+                    CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+                }
+
+                // --- Customization ---
+                CustomizationPanel(
+                    state = state,
+                    gradients = remember { com.divinecanvas.domain.model.DefaultBackgrounds.all() },
+                    onSelectGradient = viewModel::onSelectGradient,
+                    onSelectPhoto = viewModel::onSelectPhoto,
+                    onPhotoQueryChange = viewModel::onPhotoQueryChange,
+                    onSearchPhotos = viewModel::onSearchPhotos,
+                    onFontChange = viewModel::onFontChange,
+                    onFontSizeChange = viewModel::onFontSizeChange,
+                    onAlignChange = viewModel::onAlignChange,
+                    onTextColorChange = viewModel::onTextColorChange,
+                    onToggleShadow = viewModel::onToggleShadow,
+                    onOverlayChange = viewModel::onOverlayChange,
+                    onBannerTextChange = viewModel::onBannerTextChange,
+                    onBannerPositionChange = viewModel::onBannerPositionChange,
+                    onBannerColorChange = viewModel::onBannerColorChange,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+                )
             }
-
-            // --- Verse selection ---
-            VerseSelectionPanel(
-                state = state,
-                onModeChange = viewModel::onModeChange,
-                onBookSelected = viewModel::onBookSelected,
-                onChapterSelected = viewModel::onChapterSelected,
-                onVerseSelected = viewModel::onVerseSelected,
-                onTranslationSelected = viewModel::onTranslationSelected,
-                onThemeSelected = viewModel::onThemeSelected,
-                onRandomTheme = viewModel::onRandomThemeVerse,
-                onLoadVerse = viewModel::onLoadVerse,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            if (state.isLoadingVerse) {
-                CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
-            }
-
-            // --- Customization ---
-            CustomizationPanel(
-                state = state,
-                gradients = remember { com.divinecanvas.domain.model.DefaultBackgrounds.all() },
-                onSelectGradient = viewModel::onSelectGradient,
-                onSelectPhoto = viewModel::onSelectPhoto,
-                onPhotoQueryChange = viewModel::onPhotoQueryChange,
-                onSearchPhotos = viewModel::onSearchPhotos,
-                onFontChange = viewModel::onFontChange,
-                onFontSizeChange = viewModel::onFontSizeChange,
-                onAlignChange = viewModel::onAlignChange,
-                onTextColorChange = viewModel::onTextColorChange,
-                onToggleShadow = viewModel::onToggleShadow,
-                onOverlayChange = viewModel::onOverlayChange,
-                onBannerTextChange = viewModel::onBannerTextChange,
-                onBannerPositionChange = viewModel::onBannerPositionChange,
-                onBannerColorChange = viewModel::onBannerColorChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp),
-            )
         }
-    }
     }
 }
 

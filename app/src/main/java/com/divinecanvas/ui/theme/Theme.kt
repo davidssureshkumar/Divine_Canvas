@@ -11,27 +11,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColors = darkColorScheme(
-    primary = PurplePrimary,
-    onPrimary = Color.White,
-    primaryContainer = PurpleDark,
-    onPrimaryContainer = PurpleLight,
-    secondary = Amber,
-    background = SurfaceDark,
-    onBackground = OnSurfaceDark,
-    surface = SurfaceDark,
-    onSurface = OnSurfaceDark,
-    surfaceVariant = SurfaceDarkVariant,
-    onSurfaceVariant = PurpleLight,
-)
+private val DarkColors =
+    darkColorScheme(
+        primary = PurplePrimary,
+        onPrimary = Color.White,
+        primaryContainer = PurpleDark,
+        onPrimaryContainer = PurpleLight,
+        secondary = Amber,
+        background = SurfaceDark,
+        onBackground = OnSurfaceDark,
+        surface = SurfaceDark,
+        onSurface = OnSurfaceDark,
+        surfaceVariant = SurfaceDarkVariant,
+        onSurfaceVariant = PurpleLight,
+    )
 
-private val LightColors = lightColorScheme(
-    primary = PurplePrimary,
-    onPrimary = Color.White,
-    primaryContainer = PurpleLight,
-    onPrimaryContainer = PurpleDark,
-    secondary = Amber,
-)
+private val LightColors =
+    lightColorScheme(
+        primary = PurplePrimary,
+        onPrimary = Color.White,
+        primaryContainer = PurpleLight,
+        onPrimaryContainer = PurpleDark,
+        secondary = Amber,
+    )
 
 @Composable
 fun DivineCanvasTheme(
@@ -46,8 +48,7 @@ fun DivineCanvasTheme(
             // transparent, so we only control icon contrast here — setting
             // statusBarColor is deprecated under API 35.
             val window = (view.context as Activity).window
-            WindowCompat.getInsetsController(window, view)
-                .isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
     MaterialTheme(

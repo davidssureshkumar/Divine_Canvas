@@ -19,8 +19,6 @@ fun DivineCanvasNavGraph(navController: NavHostController = rememberNavControlle
         composable(Routes.EDITOR) {
             EditorScreen(onOpenSettings = { navController.navigate(Routes.SETTINGS) })
         }
-        composable(Routes.SETTINGS) {
-            SettingsScreen(onBack = { navController.popBackStack() })
-        }
+        composable(Routes.SETTINGS) { SettingsScreen(onBack = { navController.popBackStack() }) }
     }
 }

@@ -28,8 +28,8 @@ data class DropdownOption<T>(
 )
 
 /**
- * A reactive Material3 exposed dropdown. Disabled automatically when [options] is
- * empty (e.g. Chapter before a Book is chosen), which keeps the cascade error-proof.
+ * A reactive Material3 exposed dropdown. Disabled automatically when [options] is empty (e.g.
+ * Chapter before a Book is chosen), which keeps the cascade error-proof.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,9 +59,7 @@ fun <T> LabeledDropdown(
             placeholder = { Text(placeholder) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-            modifier = Modifier
-                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                .fillMaxWidth(),
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
         )
         ExposedDropdownMenu(
             expanded = expanded && isEnabled,

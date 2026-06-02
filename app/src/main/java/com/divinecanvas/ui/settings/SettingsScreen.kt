@@ -78,17 +78,20 @@ fun SettingsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+            modifier =
+                Modifier.fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Account
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(stringResource(R.string.settings_account), style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        stringResource(R.string.settings_account),
+                        style = MaterialTheme.typography.titleMedium
+                    )
                     if (account.isSignedIn) {
                         Text(
                             stringResource(
@@ -115,10 +118,18 @@ fun SettingsScreen(
             // About
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
-                    Text(stringResource(R.string.settings_offline_note), style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        stringResource(R.string.settings_about),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        stringResource(R.string.settings_offline_note),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                     HorizontalDivider()
-                    LinkRow(stringResource(R.string.settings_privacy_policy)) { openUrl(viewModel.privacyUrl) }
+                    LinkRow(stringResource(R.string.settings_privacy_policy)) {
+                        openUrl(viewModel.privacyUrl)
+                    }
                     LinkRow(stringResource(R.string.settings_terms)) { openUrl(viewModel.termsUrl) }
                     HorizontalDivider()
                     Text(
@@ -137,9 +148,6 @@ private fun LinkRow(text: String, onClick: () -> Unit) {
         text = text,
         textDecoration = TextDecoration.Underline,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 4.dp),
     )
 }

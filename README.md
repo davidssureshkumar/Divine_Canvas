@@ -126,6 +126,28 @@ Font License; the license is bundled at `assets/licenses/PlayfairDisplay-OFL.txt
 - **Before publishing:** generate your upload key, add the four secrets above, enroll
   in Play App Signing, and fill in the Data Safety form + a real Privacy Policy URL.
 
+## Continuous deployment (Play)
+
+`.github/workflows/deploy-play.yml` builds a signed AAB and uploads it to Google
+Play via [Gradle Play Publisher](https://github.com/Triple-T/gradle-play-publisher)
+(`:app:publishReleaseBundle`). It runs on a `v*` tag, or manually with a chosen
+track (internal / alpha / beta / production; defaults to **internal**).
+
+**One-time setup:**
+1. Create the app in Play Console and push **one manual release** (Google requires
+   the first upload via the Console).
+2. Create a **service account** (Play Console → Setup → API access → linked Google
+   Cloud project), grant it *Release to testing tracks* (and Production if desired),
+   and download its JSON key.
+3. Add repository secrets: `PLAY_SERVICE_ACCOUNT_JSON` (the full JSON), plus the
+   signing secrets `KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
+   `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
+
+After that, `git tag v1.0.1 && git push --tags` (or a manual run) publishes
+automatically. Credentials are read from `ANDROID_PUBLISHER_CREDENTIALS` at runtime —
+nothing sensitive is committed. Publish tasks only run when invoked, so normal
+build/test workflows are unaffected.
+
 ## Tests
 
 - **JVM unit tests** (`app/src/test/...`): offline versification logic, the reactive

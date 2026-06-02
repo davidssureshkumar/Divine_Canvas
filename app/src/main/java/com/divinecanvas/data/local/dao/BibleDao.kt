@@ -12,11 +12,9 @@ import com.divinecanvas.data.local.entity.VerseEntity
 interface BibleDao {
 
     // --- Books / versification ---
-    @Query("SELECT COUNT(*) FROM books")
-    suspend fun bookCount(): Int
+    @Query("SELECT COUNT(*) FROM books") suspend fun bookCount(): Int
 
-    @Query("SELECT * FROM books ORDER BY `order` ASC")
-    suspend fun getAllBooks(): List<BookEntity>
+    @Query("SELECT * FROM books ORDER BY `order` ASC") suspend fun getAllBooks(): List<BookEntity>
 
     @Query("SELECT * FROM books WHERE name = :name LIMIT 1")
     suspend fun getBookByName(name: String): BookEntity?
@@ -36,15 +34,13 @@ interface BibleDao {
         translation: String,
     ): VerseEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun cacheVerse(verse: VerseEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun cacheVerse(verse: VerseEntity)
 
     // --- Themes ---
     @Query("SELECT DISTINCT theme FROM theme_verses ORDER BY theme ASC")
     suspend fun getThemeNames(): List<String>
 
-    @Query("SELECT COUNT(*) FROM theme_verses")
-    suspend fun themeVerseCount(): Int
+    @Query("SELECT COUNT(*) FROM theme_verses") suspend fun themeVerseCount(): Int
 
     @Query("SELECT * FROM theme_verses WHERE theme = :theme")
     suspend fun getVersesForTheme(theme: String): List<ThemeVerseEntity>
