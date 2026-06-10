@@ -62,6 +62,8 @@ data class CanvasState(
     /** 0f = no overlay, 1f = fully opaque scrim behind the text for readability. */
     val overlayOpacity: Float = 0.35f,
     val banner: BannerConfig = BannerConfig(),
+    val lineHeightMultiplier: Float = 1.35f,
+    val letterSpacingEm: Float = 0f,
 )
 
 /** Built-in gradients that require zero internet connection. */

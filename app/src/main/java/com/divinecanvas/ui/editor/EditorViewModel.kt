@@ -139,15 +139,7 @@ constructor(
                 _uiState.update {
                     it.copy(
                         isLoadingVerse = false,
-                        userMessage =
-                            when (result.message) {
-                                "licensed_no_key" ->
-                                    "NIV, NKJV & ESV are copyrighted — add your own scripture.api.bible key " +
-                                        "(API_BIBLE_KEY in local.properties) to use them."
-                                "licensed_no_id" ->
-                                    "No Bible ID is configured for this licensed translation."
-                                else -> "Couldn't load the verse. Check your connection."
-                            },
+                        userMessage = "Couldn't load the verse. Check your connection.",
                     )
                 }
         }
@@ -201,6 +193,12 @@ constructor(
 
     fun onOverlayChange(opacity: Float) =
         _uiState.update { it.copy(canvas = it.canvas.copy(overlayOpacity = opacity)) }
+
+    fun onLineHeightChange(multiplier: Float) =
+        _uiState.update { it.copy(canvas = it.canvas.copy(lineHeightMultiplier = multiplier)) }
+
+    fun onLetterSpacingChange(spacing: Float) =
+        _uiState.update { it.copy(canvas = it.canvas.copy(letterSpacingEm = spacing)) }
 
     // --- Banner ---
     fun onBannerTextChange(text: String) =

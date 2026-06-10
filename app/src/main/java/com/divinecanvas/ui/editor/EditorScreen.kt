@@ -214,6 +214,8 @@ fun EditorScreen(
                     onSearchPhotos = viewModel::onSearchPhotos,
                     onFontChange = viewModel::onFontChange,
                     onFontSizeChange = viewModel::onFontSizeChange,
+                    onLineHeightChange = viewModel::onLineHeightChange,
+                    onLetterSpacingChange = viewModel::onLetterSpacingChange,
                     onAlignChange = viewModel::onAlignChange,
                     onTextColorChange = viewModel::onTextColorChange,
                     onToggleShadow = viewModel::onToggleShadow,

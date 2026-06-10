@@ -30,14 +30,6 @@ class EditorSnapshotTest {
     }
 
     @Test
-    fun `NIV NKJV ESV are licensed and not bundled`() {
-        listOf(Translation.NIV, Translation.NKJV, Translation.ESV).forEach {
-            assertTrue("${it.id} should be licensed", it.isLicensed)
-            assertFalse("${it.id} must not be bundled", it.bundledOffline)
-        }
-    }
-
-    @Test
     fun `snapshot round-trips selection, verse and styling`() {
         val original =
             EditorUiState(
@@ -54,6 +46,8 @@ class EditorSnapshotTest {
                         textColor = Color(0xFFFFD54F),
                         showShadow = false,
                         overlayOpacity = 0.5f,
+                        lineHeightMultiplier = 1.75f,
+                        letterSpacingEm = 0.12f,
                     ),
             )
 
@@ -70,5 +64,7 @@ class EditorSnapshotTest {
         assertEquals(TextAlign.Left, restored.canvas.textAlign)
         assertFalse(restored.canvas.showShadow)
         assertEquals(BannerPosition.BOTTOM, restored.canvas.banner.position)
+        assertEquals(1.75f, restored.canvas.lineHeightMultiplier, 0.001f)
+        assertEquals(0.12f, restored.canvas.letterSpacingEm, 0.001f)
     }
 }

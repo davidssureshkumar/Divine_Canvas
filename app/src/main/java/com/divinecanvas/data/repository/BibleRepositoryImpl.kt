@@ -1,12 +1,10 @@
 package com.divinecanvas.data.repository
 
-import com.divinecanvas.BuildConfig
 import com.divinecanvas.core.AppResult
 import com.divinecanvas.data.local.dao.BibleDao
 import com.divinecanvas.data.local.entity.BookEntity
 import com.divinecanvas.data.local.entity.VerseEntity
 import com.divinecanvas.data.local.kjv.KjvOfflineSource
-import com.divinecanvas.data.remote.api.ApiBibleApi
 import com.divinecanvas.data.remote.api.BibleApi
 import com.divinecanvas.di.IoDispatcher
 import com.divinecanvas.domain.model.BibleBook
@@ -25,7 +23,6 @@ class BibleRepositoryImpl
 constructor(
     private val dao: BibleDao,
     private val bibleApi: BibleApi,
-    private val apiBibleApi: ApiBibleApi,
     private val kjvSource: KjvOfflineSource,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : BibleRepository {
@@ -69,11 +66,7 @@ constructor(
                     fetchFromBibleApi(book, chapter, verse, reference, translation)
                 }
 
-                // 2b. Licensed (copyrighted) translations require the user's own key.
-                translation.isLicensed ->
-                    fetchLicensed(bookEntity, chapter, verse, reference, translation)
-
-                // 2c. Other public-domain translations via the free, key-less API.
+                // 2b. Other public-domain translations via the free, key-less API.
                 else -> fetchFromBibleApi(book, chapter, verse, reference, translation)
             }
         }
@@ -103,35 +96,6 @@ constructor(
             }
         }
 
-    private suspend fun fetchLicensed(
-        bookEntity: BookEntity?,
-        chapter: Int,
-        verse: Int,
-        reference: String,
-        translation: Translation,
-    ): AppResult<Verse> {
-        if (BuildConfig.API_BIBLE_KEY.isBlank()) {
-            return AppResult.Failure("licensed_no_key")
-        }
-        val bibleId = bibleIdFor(translation)
-        if (bibleId.isBlank()) return AppResult.Failure("licensed_no_id")
-        val resolvedBook = bookEntity ?: return AppResult.Failure("offline")
-
-        return try {
-            val response =
-                apiBibleApi.getVerse(
-                    apiKey = BuildConfig.API_BIBLE_KEY,
-                    bibleId = bibleId,
-                    verseId = "${resolvedBook.abbrev}.$chapter.$verse",
-                )
-            val text = response.data.content.trim()
-            if (text.isBlank()) error("Empty licensed response")
-            success(resolvedBook.name, chapter, verse, reference, text, translation)
-        } catch (e: Exception) {
-            AppResult.Failure("offline", e)
-        }
-    }
-
     private suspend fun success(
         book: String,
         chapter: Int,
@@ -155,14 +119,6 @@ constructor(
             fromCache = false,
         )
     }
-
-    private fun bibleIdFor(translation: Translation): String =
-        when (translation) {
-            Translation.NIV -> BuildConfig.API_BIBLE_ID_NIV
-            Translation.NKJV -> BuildConfig.API_BIBLE_ID_NKJV
-            Translation.ESV -> BuildConfig.API_BIBLE_ID_ESV
-            else -> ""
-        }
 
     override suspend fun getThemes(): List<String> =
         withContext(ioDispatcher) { dao.getThemeNames() }

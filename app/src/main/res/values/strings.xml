@@ -31,6 +31,8 @@
     <string name="section_banner">Signature banner</string>
     <string name="label_font">Font</string>
     <string name="label_font_size">Size</string>
+    <string name="label_line_spacing">Line spacing</string>
+    <string name="label_letter_spacing">Letter spacing</string>
     <string name="label_alignment">Alignment</string>
     <string name="label_text_color">Text color</string>
     <string name="label_overlay">Readability overlay</string>

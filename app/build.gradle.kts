@@ -57,17 +57,6 @@ android {
         buildConfigField("String", "UNSPLASH_ACCESS_KEY", "\"${prop("UNSPLASH_ACCESS_KEY")}\"")
         buildConfigField("String", "PEXELS_API_KEY", "\"${prop("PEXELS_API_KEY")}\"")
 
-        // Optional BYO licensed-translation key (scripture.api.bible). Without it,
-        // licensed translations (NIV/NKJV/ESV) stay disabled. Bible IDs must match
-        // the versions your key is entitled to; defaults are common public IDs.
-        buildConfigField("String", "API_BIBLE_KEY", "\"${prop("API_BIBLE_KEY")}\"")
-        buildConfigField(
-            "String",
-            "API_BIBLE_ID_NIV",
-            "\"${prop("API_BIBLE_ID_NIV").ifEmpty { "78a9f6124f344018-01" }}\""
-        )
-        buildConfigField("String", "API_BIBLE_ID_NKJV", "\"${prop("API_BIBLE_ID_NKJV")}\"")
-        buildConfigField("String", "API_BIBLE_ID_ESV", "\"${prop("API_BIBLE_ID_ESV")}\"")
         // Web client id for optional Google Sign-In via Credential Manager.
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${prop("GOOGLE_WEB_CLIENT_ID")}\"")
         buildConfigField(

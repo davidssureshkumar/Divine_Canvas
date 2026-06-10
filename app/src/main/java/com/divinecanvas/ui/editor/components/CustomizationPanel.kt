@@ -65,6 +65,8 @@ fun CustomizationPanel(
     onSearchPhotos: () -> Unit,
     onFontChange: (CanvasFont) -> Unit,
     onFontSizeChange: (Float) -> Unit,
+    onLineHeightChange: (Float) -> Unit,
+    onLetterSpacingChange: (Float) -> Unit,
     onAlignChange: (TextAlign) -> Unit,
     onTextColorChange: (Color) -> Unit,
     onToggleShadow: (Boolean) -> Unit,
@@ -88,6 +90,8 @@ fun CustomizationPanel(
             state = state,
             onFontChange = onFontChange,
             onFontSizeChange = onFontSizeChange,
+            onLineHeightChange = onLineHeightChange,
+            onLetterSpacingChange = onLetterSpacingChange,
             onAlignChange = onAlignChange,
             onTextColorChange = onTextColorChange,
             onToggleShadow = onToggleShadow,
@@ -199,6 +203,8 @@ private fun TypographySection(
     state: EditorUiState,
     onFontChange: (CanvasFont) -> Unit,
     onFontSizeChange: (Float) -> Unit,
+    onLineHeightChange: (Float) -> Unit,
+    onLetterSpacingChange: (Float) -> Unit,
     onAlignChange: (TextAlign) -> Unit,
     onTextColorChange: (Color) -> Unit,
     onToggleShadow: (Boolean) -> Unit,
@@ -224,6 +230,22 @@ private fun TypographySection(
             value = state.canvas.fontSizeSp,
             onValueChange = onFontSizeChange,
             valueRange = 16f..56f,
+        )
+
+        // Line spacing
+        Text(stringResource(R.string.label_line_spacing) + ": ${"%.2f".format(state.canvas.lineHeightMultiplier)}x")
+        Slider(
+            value = state.canvas.lineHeightMultiplier,
+            onValueChange = onLineHeightChange,
+            valueRange = 1.0f..2.0f,
+        )
+
+        // Letter spacing
+        Text(stringResource(R.string.label_letter_spacing) + ": ${"%.2f".format(state.canvas.letterSpacingEm)}em")
+        Slider(
+            value = state.canvas.letterSpacingEm,
+            onValueChange = onLetterSpacingChange,
+            valueRange = -0.05f..0.25f,
         )
 
         // Alignment

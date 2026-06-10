@@ -1,6 +1,5 @@
 package com.divinecanvas.data.remote.api
 
-import com.divinecanvas.data.remote.dto.ApiBibleResponse
 import com.divinecanvas.data.remote.dto.BibleApiResponse
 import com.divinecanvas.data.remote.dto.PexelsSearchResponse
 import com.divinecanvas.data.remote.dto.UnsplashSearchResponse
@@ -40,20 +39,3 @@ interface PexelsApi {
     ): PexelsSearchResponse
 }
 
-/**
- * Optional licensed-translation provider (NIV/NKJV/ESV via the user's own key). Base url:
- * https://api.scripture.api.bible/v1/ verseId format is "BOOK.CHAPTER.VERSE", e.g. "JHN.3.16".
- */
-interface ApiBibleApi {
-    @GET("bibles/{bibleId}/verses/{verseId}")
-    suspend fun getVerse(
-        @Header("api-key") apiKey: String,
-        @Path("bibleId") bibleId: String,
-        @Path("verseId") verseId: String,
-        @Query("content-type") contentType: String = "text",
-        @Query("include-notes") includeNotes: Boolean = false,
-        @Query("include-titles") includeTitles: Boolean = false,
-        @Query("include-chapter-numbers") includeChapterNumbers: Boolean = false,
-        @Query("include-verse-numbers") includeVerseNumbers: Boolean = false,
-    ): ApiBibleResponse
-}

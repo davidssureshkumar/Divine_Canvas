@@ -17,8 +17,7 @@ Retrofit · Coil.
     versification table in Room.
   - *Theme*: pick a theme (Faith, Anxiety, Joy, Strength, …) and auto-pick a
     relevant verse.
-  - Translation selector — **KJV (fully offline)**, WEB, ASV free; NIV/NKJV/ESV
-    available via your own licensed key (see *Translations & licensing* below).
+  - Translation selector — **KJV (fully offline)**, WEB, and ASV (free).
 - **9:16 WYSIWYG canvas** with a dedicated off-screen render node so every export is
   a fixed **1080×1920** full-resolution image, independent of the preview size.
 - **Restores your last session** — the verse and full styling are persisted and
@@ -82,17 +81,12 @@ Copy `local.properties.example` → `local.properties` and fill in any you have.
 **All are optional** — with none set, the app runs fully offline (bundled verses +
 gradient backgrounds, no sign-in). See that file for where to get free keys.
 
-## Translations & licensing
+## Translations
 
 - **KJV** — complete public-domain text is bundled in `assets/bible/kjv.json` and
   served by `KjvOfflineSource`, so KJV works **fully offline, no network ever**.
 - **WEB / ASV** — public domain; fetched from the free key-less
   [bible-api.com](https://bible-api.com) and cached for offline reuse.
-- **NIV / NKJV / ESV** — these are **copyrighted** and legally **cannot** be bundled
-  or served for free. They are modeled as `LICENSED` and route through *your own*
-  [scripture.api.bible](https://scripture.api.bible) key (`API_BIBLE_KEY` +
-  `API_BIBLE_ID_*` in `local.properties`). Without a key they stay disabled and the
-  app explains why. The app ships **no copyrighted scripture text**.
 
 ## Offline data note
 

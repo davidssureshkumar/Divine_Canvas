@@ -1,7 +1,6 @@
 package com.divinecanvas.di
 
 import com.divinecanvas.BuildConfig
-import com.divinecanvas.data.remote.api.ApiBibleApi
 import com.divinecanvas.data.remote.api.BibleApi
 import com.divinecanvas.data.remote.api.PexelsApi
 import com.divinecanvas.data.remote.api.UnsplashApi
@@ -25,8 +24,6 @@ import retrofit2.Retrofit
 
 @Qualifier @Retention(AnnotationRetention.BINARY) annotation class PexelsRetrofit
 
-@Qualifier @Retention(AnnotationRetention.BINARY) annotation class ApiBibleRetrofit
-
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -34,7 +31,6 @@ object NetworkModule {
     private const val BIBLE_BASE = "https://bible-api.com/"
     private const val UNSPLASH_BASE = "https://api.unsplash.com/"
     private const val PEXELS_BASE = "https://api.pexels.com/v1/"
-    private const val API_BIBLE_BASE = "https://api.scripture.api.bible/v1/"
 
     @Provides
     @Singleton
@@ -84,12 +80,6 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @ApiBibleRetrofit
-    fun provideApiBibleRetrofit(client: OkHttpClient, json: Json): Retrofit =
-        retrofit(API_BIBLE_BASE, client, json)
-
-    @Provides
-    @Singleton
     fun provideBibleApi(@BibleRetrofit retrofit: Retrofit): BibleApi =
         retrofit.create(BibleApi::class.java)
 
@@ -102,9 +92,4 @@ object NetworkModule {
     @Singleton
     fun providePexelsApi(@PexelsRetrofit retrofit: Retrofit): PexelsApi =
         retrofit.create(PexelsApi::class.java)
-
-    @Provides
-    @Singleton
-    fun provideApiBibleApi(@ApiBibleRetrofit retrofit: Retrofit): ApiBibleApi =
-        retrofit.create(ApiBibleApi::class.java)
 }

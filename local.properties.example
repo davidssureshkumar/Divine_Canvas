@@ -11,15 +11,6 @@ UNSPLASH_ACCESS_KEY=
 # ...or https://www.pexels.com/api/ (used if Unsplash key is blank)
 PEXELS_API_KEY=
 
-# --- Optional licensed translations (NIV / NKJV / ESV) ---
-# These are COPYRIGHTED and cannot be bundled. To enable them, provide your OWN
-# key from https://scripture.api.bible and Bible IDs your key is entitled to.
-# Public-domain translations (KJV offline, WEB, ASV) work with none of this set.
-API_BIBLE_KEY=
-API_BIBLE_ID_NIV=
-API_BIBLE_ID_NKJV=
-API_BIBLE_ID_ESV=
-
 # --- Optional Google Sign-In ---
 # Web client ID from a Google Cloud OAuth 2.0 "Web application" credential.
 GOOGLE_WEB_CLIENT_ID=

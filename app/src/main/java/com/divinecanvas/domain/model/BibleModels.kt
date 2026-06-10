@@ -35,13 +35,9 @@ data class Verse(
  * How a translation's text is sourced.
  * - [PUBLIC_DOMAIN] translations are free to bundle/serve. KJV ships as a complete offline asset;
  *   WEB/ASV come from the free key-less API and are cached.
- * - [LICENSED] translations (NIV, NKJV, ESV, …) are copyrighted and **cannot** be bundled or served
- *   for free. They route through the user's own licensed scripture.api.bible key and are disabled
- *   until one is configured.
  */
 enum class TranslationTier {
-    PUBLIC_DOMAIN,
-    LICENSED
+    PUBLIC_DOMAIN
 }
 
 enum class Translation(
@@ -53,13 +49,10 @@ enum class Translation(
 ) {
     KJV("kjv", "KJV — King James Version", TranslationTier.PUBLIC_DOMAIN, bundledOffline = true),
     WEB("web", "WEB — World English Bible", TranslationTier.PUBLIC_DOMAIN),
-    ASV("asv", "ASV — American Standard Version", TranslationTier.PUBLIC_DOMAIN),
-    NIV("niv", "NIV — New International (licensed)", TranslationTier.LICENSED),
-    NKJV("nkjv", "NKJV — New King James (licensed)", TranslationTier.LICENSED),
-    ESV("esv", "ESV — English Standard (licensed)", TranslationTier.LICENSED);
+    ASV("asv", "ASV — American Standard Version", TranslationTier.PUBLIC_DOMAIN);
 
     val isLicensed: Boolean
-        get() = tier == TranslationTier.LICENSED
+        get() = false
 
     companion object {
         fun fromId(id: String): Translation = entries.firstOrNull { it.id == id } ?: WEB

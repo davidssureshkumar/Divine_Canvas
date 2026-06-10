@@ -51,6 +51,8 @@ data class EditorSnapshot(
     val bannerText: String = "",
     val bannerPosition: String = BannerPosition.BOTTOM.name,
     val bannerColorArgb: Int = Color.White.toArgb(),
+    val lineHeightMultiplier: Float = 1.35f,
+    val letterSpacingEm: Float = 0f,
 )
 
 fun EditorUiState.toSnapshot(): EditorSnapshot {
@@ -84,6 +86,8 @@ fun EditorUiState.toSnapshot(): EditorSnapshot {
         bannerText = c.banner.text,
         bannerPosition = c.banner.position.name,
         bannerColorArgb = c.banner.color.toArgb(),
+        lineHeightMultiplier = c.lineHeightMultiplier,
+        letterSpacingEm = c.letterSpacingEm,
     )
 }
 
@@ -139,6 +143,8 @@ fun EditorSnapshot.restoreInto(base: EditorUiState, books: List<BibleBook>): Edi
                                 .getOrDefault(BannerPosition.BOTTOM),
                         color = Color(bannerColorArgb),
                     ),
+                lineHeightMultiplier = lineHeightMultiplier,
+                letterSpacingEm = letterSpacingEm,
             ),
     )
 }

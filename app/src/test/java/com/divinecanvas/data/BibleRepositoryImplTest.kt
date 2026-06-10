@@ -4,7 +4,6 @@ import com.divinecanvas.core.AppResult
 import com.divinecanvas.data.local.dao.BibleDao
 import com.divinecanvas.data.local.entity.VerseEntity
 import com.divinecanvas.data.local.kjv.KjvOfflineSource
-import com.divinecanvas.data.remote.api.ApiBibleApi
 import com.divinecanvas.data.remote.api.BibleApi
 import com.divinecanvas.data.remote.dto.BibleApiResponse
 import com.divinecanvas.data.repository.BibleRepositoryImpl
@@ -25,10 +24,9 @@ class BibleRepositoryImplTest {
 
     private val dao = mockk<BibleDao>(relaxed = true)
     private val api = mockk<BibleApi>()
-    private val apiBibleApi = mockk<ApiBibleApi>(relaxed = true)
     private val kjvSource = mockk<KjvOfflineSource>(relaxed = true)
     private val repo =
-        BibleRepositoryImpl(dao, api, apiBibleApi, kjvSource, UnconfinedTestDispatcher())
+        BibleRepositoryImpl(dao, api, kjvSource, UnconfinedTestDispatcher())
 
     @Test
     fun `cache hit returns immediately without hitting the network`() = runTest {
